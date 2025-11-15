@@ -149,7 +149,7 @@ public class PlayerController : MonoBehaviour
         // apply gravity effect
         ballRigid.mass *= thisBall.GravityStrength;
         // ball throw based off of speed
-        Vector3 throwDir = gameObject.transform.forward + gameObject.transform.up * 0.32f;
+        Vector3 throwDir = playerCamera.transform.forward + playerCamera.transform.up * 0.2f;
         ballRigid.AddForce(throwDir.normalized * thisBall.Speed, ForceMode.Impulse);
         // direction
         Vector3 curve = new Vector3(thisBall.DirectionStrength, 0f, 0f);
