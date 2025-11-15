@@ -193,6 +193,7 @@ public class PlayerController : MonoBehaviour
         {
             PlayerController otherPlayer = thisBall.ThrownBy.GetComponent<PlayerController>();
             GameManager.gm.players[otherPlayer.playerId] += 1; // they get a point!
+            Debug.Log("player " + otherPlayer.playerId + " scored a point. Total points: " + GameManager.gm.players[otherPlayer.playerId]);
         }
     }
     void Update()
