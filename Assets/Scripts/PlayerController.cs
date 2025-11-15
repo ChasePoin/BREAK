@@ -96,7 +96,7 @@ public class PlayerController : MonoBehaviour
             // direction
             Vector3 curve = new Vector3(thisBall.DirectionStrength, (ballRigid.linearVelocity.y * 0) + 15f, 0f);
             ballRigid.AddForce(curve * Time.deltaTime, ForceMode.Force);
-            ballRigid.angularDrag = 3f;
+            ballRigid.angularDamping = 3f;
             startCharge = false;
             chargePower = 0;
             ballRigid.useGravity = true;
@@ -157,6 +157,9 @@ public class PlayerController : MonoBehaviour
         if (move != Vector3.zero)
         {
             transform.position = move;
+        } else
+        {
+            animator.SetTrigger("Idle");
         }
 
         Vector3 rotatePlayer = new Vector3(0, cameraInput.x, 0);
