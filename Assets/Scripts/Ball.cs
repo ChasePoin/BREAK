@@ -6,6 +6,7 @@ public class Ball : MonoBehaviour
     public float Speed;
     public float GravityStrength;
     public float DirectionStrength;
+    public GameObject ThrownBy;
     public float LargeSize = 5.00f;
     public float MediumSize = 2.50f;
 

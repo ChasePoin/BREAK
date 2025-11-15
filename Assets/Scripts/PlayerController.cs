@@ -39,7 +39,7 @@ public class PlayerController : MonoBehaviour
     }
     public void OnThrow(InputAction.CallbackContext context)
     {
-        Debug.Log("Throw Ball");
+        Ball.ThrownBy = this.gameObject;
     }
     public void OnCardUse(InputAction.CallbackContext context)
     {
