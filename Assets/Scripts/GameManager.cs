@@ -7,20 +7,21 @@ using System.Collections.Generic;
 public class GameManager : MonoBehaviour
 {
     // map of players to scores
-    [SerializeField]
-    private Dictionary<int, int> players = new Dictionary<int, int>();
+    public Dictionary<int, int> players = new Dictionary<int, int>();
     private PlayerInputManager pim;
     int currentPlayers = 0;
     public GameObject playerPrefab;
     public int nextPlayerId = 1;
+    static public GameManager gm;
     void Awake()
     {
+        gm = this;
         pim = this.GetComponent<PlayerInputManager>();
         DontDestroyOnLoad(gameObject);
-        SpawnPlayers();
+        SpawnPlayers(true);
     }
 
-    private void SpawnPlayers()
+    private void SpawnPlayers(bool start)
     {
         foreach (Transform childTransform in transform)
         {
@@ -29,12 +30,18 @@ public class GameManager : MonoBehaviour
             {
                 GameObject player = Instantiate(playerPrefab, childTransform);
                 PlayerController ppfb = player.GetComponent<PlayerController>();
-                if (ppfb.playerId == 0)
+                if (start)
                 {
                     ppfb.playerId = nextPlayerId;
                     players[ppfb.playerId] = 0;
                     nextPlayerId++;
                     Debug.Log(ppfb.playerId + ": " + players[ppfb.playerId]);
+                }
+                else
+                {
+                    ppfb.playerId = nextPlayerId;
+                    nextPlayerId++;
+                    Debug.Log("recreating " + ppfb.playerId + ": " + players[ppfb.playerId]);
                 }
                 sp.haveISpawnedSomebody = true;
                 currentPlayers++;
@@ -46,7 +53,19 @@ public class GameManager : MonoBehaviour
     // need to reset players so we can spawn them in each new scene
     public void ResetPlayers()
     {
-        currentPlayers = 0;
+        foreach (Transform childTransform in transform)
+        {
+            SpawnPoint sp = childTransform.gameObject.GetComponent<SpawnPoint>();
+            sp.haveISpawnedSomebody = false;
+
+            foreach (Transform gc in childTransform)
+            {
+                Destroy(gc.gameObject);
+                currentPlayers--;
+            }
+        }
+        nextPlayerId = 1;
+        SpawnPlayers(false);
     }
 
 }

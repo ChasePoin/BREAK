@@ -56,10 +56,6 @@ public class PlayerController : MonoBehaviour
         if (context.canceled)
             jumped = false;
     }
-    void OnCollisionEnter(Collision collision)
-    {
-        Debug.Log(collision.gameObject.name);
-    }
     // needs did I properly catch this logic and to assign BallHeldByPlayer if successful
     public void OnCatch(InputAction.CallbackContext context)
     {
@@ -83,9 +79,6 @@ public class PlayerController : MonoBehaviour
                     CapsuleCollider previousPlayerCollider = previousPlayerGO.GetComponent<CapsuleCollider>();
                     if (previousPlayerCollider != null) Physics.IgnoreCollision(ballCollider, previousPlayerCollider, false);
                 }
-                int heldBallLayer = LayerMask.NameToLayer("HeldBalls");
-                ballHit.layer = heldBallLayer;
-                
                 Debug.Log("Caught the ball.");
             }
             else
@@ -190,6 +183,18 @@ public class PlayerController : MonoBehaviour
 
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        GameObject whatEntered = collision.gameObject;
+        Ball thisBall = whatEntered.GetComponent<Ball>();
+        // check if a ball entered
+        if (thisBall == null) { Debug.Log("Not a Ball Entered"); return; }
+        if (thisBall.ThrownBy != gameObject && thisBall.ThrownBy != null)
+        {
+            PlayerController otherPlayer = thisBall.ThrownBy.GetComponent<PlayerController>();
+            GameManager.gm.players[otherPlayer.playerId] += 1; // they get a point!
+        }
+    }
     void Update()
     {
         if (BallHeldByPlayer) 
