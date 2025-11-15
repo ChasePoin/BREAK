@@ -29,7 +29,7 @@ public class PlayerController : MonoBehaviour
     private CharacterController controller;
     private Vector3 playerVelocity;
     private bool groundedPlayer;
-    GameObject? BallHeldByPlayer;
+    GameObject BallHeldByPlayer;
     public bool startCharge = false;
     public float chargePower = 1f;
 
@@ -45,7 +45,6 @@ public class PlayerController : MonoBehaviour
     {
         if (context.performed)
             jumped = true;
-            animator.SetTrigger("Jump");
         if (context.canceled)
             jumped = false;
     }
@@ -86,6 +85,14 @@ public class PlayerController : MonoBehaviour
             startCharge = true;
             ballRigid.mass = thisBall.GravityStrength;
             ballRigid.useGravity = false;
+            if (context.control.name == "rightTrigger")
+            {
+                animator.SetTrigger("StartThrow");
+            }
+            else
+            {
+                animator.SetTrigger("StartThrowLeft");
+            }
         }
         if (context.canceled)
         {
@@ -101,6 +108,14 @@ public class PlayerController : MonoBehaviour
             chargePower = 0;
             ballRigid.useGravity = true;
             BallHeldByPlayer = null;
+            if (context.control.name == "rightTrigger")
+            {
+                animator.SetTrigger("EndThrow");
+            }
+            else
+            {
+                animator.SetTrigger("EndThrowLeft");
+            }
         }
        
     }
@@ -180,6 +195,7 @@ public class PlayerController : MonoBehaviour
         if (jumped && groundedPlayer)
         {
             playerVelocity.y = Mathf.Sqrt(jumpHeight * -2.0f * gravityValue);
+            animator.SetTrigger("Jump");
         }
 
         // Apply gravity
@@ -190,7 +206,7 @@ public class PlayerController : MonoBehaviour
         controller.Move(finalMove * Time.deltaTime);
 
         animator.SetFloat("ForwardSpeed", Vector3.Dot(finalMove, transform.forward));
-        animator.SetFloat("SideSpeed", Vector3.Dot(finalMove, transform.forward));
+        animator.SetFloat("SideSpeed", Vector3.Dot(finalMove, transform.right));
     }
 
     // private void ApplyTransformations(Rigidbody ballRigid, Ball thisBall, InputAction.CallbackContext context)
