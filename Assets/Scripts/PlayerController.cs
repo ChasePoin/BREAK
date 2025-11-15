@@ -67,6 +67,8 @@ public class PlayerController : MonoBehaviour
         {
             Debug.Log("Did not Catch the ball.");
         }
+        if (context.performed)
+            Debug.Log("Catch the ball. down");
     }
     // needs to take transformations and effects applied to the ball and kick it off
     public void OnThrow(InputAction.CallbackContext context)
@@ -78,11 +80,23 @@ public class PlayerController : MonoBehaviour
         ApplyTransformations(ballRigid, thisBall);
         BallHeldByPlayer = null;
        
+        if (context.started)
+        {
+            string control = context.control.name;
+            Debug.Log($"Throw Ball using {control}");
+        }
+        if (context.canceled)
+        {
+            Debug.Log("Throw ball end");
+        }
     }
     public void OnCardUse(InputAction.CallbackContext context)
     {
-        int cardNumber = context.action.GetBindingIndexForControl(context.control);
-        Debug.Log($"Use card #{cardNumber}");
+        if (context.performed)
+        {
+            int cardNumber = context.action.GetBindingIndexForControl(context.control);
+            Debug.Log($"Use card #{cardNumber}");
+        }
     }
     private void Awake()
     {
