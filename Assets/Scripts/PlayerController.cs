@@ -183,23 +183,5 @@ public class PlayerController : MonoBehaviour
         Vector3 finalMove = (move * playerSpeed) + (playerVelocity.y * Vector3.up);
         controller.Move(finalMove * Time.deltaTime);
     }
-
-    // private void ApplyTransformations(Rigidbody ballRigid, Ball thisBall, InputAction.CallbackContext context)
-    // {
-    //     // // apply gravity effect
-    //     // ballRigid.mass *= thisBall.GravityStrength;
-    //     // // ball throw based off of speed
-    //     // Vector3 throwDir = playerCamera.transform.forward + playerCamera.transform.up * 0.2f;
-
-    //     // // on release
-    //     // if (context.canceled)
-    //     // {
-    //     //     ballRigid.AddForce(throwDir.normalized * thisBall.Speed * chargePower, ForceMode.Impulse);
-    //     //     // direction
-    //     //     Vector3 curve = new Vector3(thisBall.DirectionStrength, 0f, 0f);
-    //     //     ballRigid.AddForce(curve * Time.deltaTime, ForceMode.Force);
-    //     //     startCharge = false;
-    //     //     chargePower = 0;
-    //     }
 }
 
