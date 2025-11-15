@@ -3,9 +3,9 @@ using UnityEngine;
 public class Ball : MonoBehaviour
 {
     public float Size;
-    public float Speed;
-    public float GravityStrength;
-    public float DirectionStrength;
+    public float Speed = 0.2f;
+    public float GravityStrength = .5f;
+    public float DirectionStrength = 2f;
     public GameObject ThrownBy;
     public float LargeSize = 5.00f;
     public float MediumSize = 2.50f;
