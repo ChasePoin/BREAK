@@ -17,9 +17,9 @@
                 },
                 {
                     "name": "Catch",
-                    "type": "PassThrough",
+                    "type": "Button",
                     "id": "6776c756-5992-4a5a-b1ed-a233104943ce",
-                    "expectedControlType": "Vector2",
+                    "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
@@ -96,9 +96,9 @@
                     "isPartOfComposite": false
                 },
                 {
-                    "name": "modifier",
-                    "id": "b626a78d-3dfe-4d4a-b4cc-1e10d91f92f1",
-                    "path": "<Gamepad>/leftShoulder",
+                    "name": "binding",
+                    "id": "6f5afa45-e2be-49da-b1cb-f774c60332a5",
+                    "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",
@@ -107,9 +107,9 @@
                     "isPartOfComposite": true
                 },
                 {
-                    "name": "binding",
-                    "id": "6f5afa45-e2be-49da-b1cb-f774c60332a5",
-                    "path": "<Gamepad>/rightShoulder",
+                    "name": "modifier",
+                    "id": "b626a78d-3dfe-4d4a-b4cc-1e10d91f92f1",
+                    "path": "<Gamepad>/leftShoulder",
                     "interactions": "",
                     "processors": "",
                     "groups": ";Gamepad",

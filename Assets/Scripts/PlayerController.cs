@@ -44,17 +44,28 @@ public class PlayerController : MonoBehaviour
     }
     public void OnCatch(InputAction.CallbackContext context)
     {
-        Debug.Log("Catch the ball.");
+        if (context.performed)
+            Debug.Log("Catch the ball. down");
     }
     public void OnThrow(InputAction.CallbackContext context)
     {
-        string control = context.control.name;
-        Debug.Log($"Throw Ball using {control}");
+        if (context.started)
+        {
+            string control = context.control.name;
+            Debug.Log($"Throw Ball using {control}");
+        }
+        if (context.canceled)
+        {
+            Debug.Log("Throw ball end");
+        }
     }
     public void OnCardUse(InputAction.CallbackContext context)
     {
-        int cardNumber = context.action.GetBindingIndexForControl(context.control);
-        Debug.Log($"Use card #{cardNumber}");
+        if (context.performed)
+        {
+            int cardNumber = context.action.GetBindingIndexForControl(context.control);
+            Debug.Log($"Use card #{cardNumber}");
+        }
     }
     private void Awake()
     {
