@@ -12,9 +12,15 @@ public class PlayerController : MonoBehaviour
     private float jumpHeight = 1.5f;
     [SerializeField]
     private float gravityValue = -9.81f;
-
+    [SerializeField]
+    private float yawSensitivity = 250.0f;
+    [SerializeField]
+    private float pitchSensitivity = 250.0f;
+    [SerializeField]
+    private Camera playerCamera;
     private Vector2 movementInput = Vector2.zero;
     private Vector2 cameraInput = Vector2.zero;
+    private float cameraPitch = 0f;
     private bool jumped = false;
 
     private CharacterController controller;
@@ -31,7 +37,10 @@ public class PlayerController : MonoBehaviour
     }
     public void OnJump(InputAction.CallbackContext context)
     {
-        jumped = context.ReadValue<bool>();
+        if (context.performed)
+            jumped = true;
+        if (context.canceled)
+            jumped = false;
     }
     public void OnCatch(InputAction.CallbackContext context)
     {
@@ -39,16 +48,17 @@ public class PlayerController : MonoBehaviour
     }
     public void OnThrow(InputAction.CallbackContext context)
     {
-        Debug.Log("Throw Ball");
+        string control = context.control.name;
+        Debug.Log($"Throw Ball using {control}");
     }
     public void OnCardUse(InputAction.CallbackContext context)
     {
-        //context.
-        //Debug.Log("Use card #", );
+        int cardNumber = context.action.GetBindingIndexForControl(context.control);
+        Debug.Log($"Use card #{cardNumber}");
     }
     private void Awake()
     {
-        controller = gameObject.AddComponent<CharacterController>();
+        controller = gameObject.GetComponent<CharacterController>();
     }
 
     private void OnEnable()
@@ -69,12 +79,26 @@ public class PlayerController : MonoBehaviour
             playerVelocity.y = 0f;
         }
 
-        Vector3 move = new Vector3(movementInput.x, 0, movementInput.y);
+        Vector3 move = transform.forward * movementInput.y + transform.right * movementInput.x;
         move = Vector3.ClampMagnitude(move, 1f);
 
         if (move != Vector3.zero)
         {
-            transform.forward = move;
+            transform.position = move;
+        }
+
+        Vector3 rotatePlayer = new Vector3(0, cameraInput.x, 0);
+
+        if (rotatePlayer != Vector3.zero)
+        {
+            transform.Rotate(rotatePlayer * Time.deltaTime * yawSensitivity);
+        }
+
+        if (cameraInput != Vector2.zero)
+        {
+            cameraPitch -= cameraInput.y * Time.deltaTime * pitchSensitivity;
+            cameraPitch = Mathf.Clamp(cameraPitch, -90f, 90f);
+            playerCamera.transform.localRotation = Quaternion.Euler(cameraPitch, 0, 0);
         }
 
         // Jump
