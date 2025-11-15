@@ -2,6 +2,7 @@
 
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections;
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
@@ -20,6 +21,7 @@ public class PlayerController : MonoBehaviour
     private CharacterController controller;
     private Vector3 playerVelocity;
     private bool groundedPlayer;
+    GameObject BallHeldByPlayer;
 
     public void OnMove(InputAction.CallbackContext context)
     {
@@ -33,13 +35,30 @@ public class PlayerController : MonoBehaviour
     {
         jumped = context.ReadValue<bool>();
     }
+
+    // needs did I properly catch this logic and to assign BallHeldByPlayer if successful
     public void OnCatch(InputAction.CallbackContext context)
     {
-        Debug.Log("Catch the ball.");
+
+        if (Physics.SphereCast(transform.position + controller.center, transform.position.y, transform.forward, out RaycastHit hit, 10))
+        {
+            GameObject ballHit = hit.transform.gameObject;
+            BallHeldByPlayer = ballHit;
+            ballHit.transform.position = controller.center + new Vector3(1f, 0f, 0f);
+            Debug.Log("Caught the ball.");
+        }
+        else
+        {
+            Debug.Log("Did not Catch the ball.");
+        }
     }
+    // needs to take transformations and effects applied to the ball and kick it off
     public void OnThrow(InputAction.CallbackContext context)
     {
-        Ball.ThrownBy = this.gameObject;
+        Ball thisBall = BallHeldByPlayer.GetComponent<Ball>();
+        thisBall.ThrownBy = this.gameObject; // set ball's thrown by to this player
+        BallHeldByPlayer.GetComponent<Rigidbody>().AddRelativeForce(new Vector3 (thisBall.Speed, 0 ,0)); // launch the ball
+       
     }
     public void OnCardUse(InputAction.CallbackContext context)
     {
