@@ -13,15 +13,23 @@ public class PlayerController : MonoBehaviour
     private float jumpHeight = 1.5f;
     [SerializeField]
     private float gravityValue = -9.81f;
-
+    [SerializeField]
+    private float yawSensitivity = 250.0f;
+    [SerializeField]
+    private float pitchSensitivity = 250.0f;
+    [SerializeField]
+    private Camera playerCamera;
     private Vector2 movementInput = Vector2.zero;
     private Vector2 cameraInput = Vector2.zero;
+    private float cameraPitch = 0f;
     private bool jumped = false;
 
     private CharacterController controller;
     private Vector3 playerVelocity;
     private bool groundedPlayer;
-    GameObject BallHeldByPlayer;
+    GameObject? BallHeldByPlayer;
+    public bool startCharge = false;
+    public float chargePower = 1f;
 
     public void OnMove(InputAction.CallbackContext context)
     {
@@ -33,41 +41,77 @@ public class PlayerController : MonoBehaviour
     }
     public void OnJump(InputAction.CallbackContext context)
     {
-        jumped = context.ReadValue<bool>();
+        if (context.performed)
+            jumped = true;
+        if (context.canceled)
+            jumped = false;
     }
 
     // needs did I properly catch this logic and to assign BallHeldByPlayer if successful
     public void OnCatch(InputAction.CallbackContext context)
     {
 
-        if (Physics.SphereCast(transform.position + controller.center, transform.position.y, transform.forward, out RaycastHit hit, 10))
+        if (Physics.SphereCast(transform.position + controller.center, transform.position.y, playerCamera.transform.forward, out RaycastHit hit, 4) && BallHeldByPlayer == null)
         {
             GameObject ballHit = hit.transform.gameObject;
-            BallHeldByPlayer = ballHit;
-            ballHit.transform.position = controller.center + new Vector3(1f, 0f, 0f);
-            Debug.Log("Caught the ball.");
+            if (ballHit.tag == "Ball")
+            {
+                BallHeldByPlayer = ballHit;
+                ballHit.transform.position = transform.position + new Vector3(.5f, 0f, 0f);
+                Debug.Log("Caught the ball.");
+            }
+            else
+            {
+                Debug.Log("Caught someting... It wasn't a ball!");
+            }
         }
         else
         {
             Debug.Log("Did not Catch the ball.");
         }
+        if (context.performed)
+            Debug.Log("Catch the ball. down");
     }
     // needs to take transformations and effects applied to the ball and kick it off
     public void OnThrow(InputAction.CallbackContext context)
     {
+        if (BallHeldByPlayer == null) return;
+        Rigidbody ballRigid = BallHeldByPlayer.GetComponent<Rigidbody>();
         Ball thisBall = BallHeldByPlayer.GetComponent<Ball>();
-        thisBall.ThrownBy = this.gameObject; // set ball's thrown by to this player
-        BallHeldByPlayer.GetComponent<Rigidbody>().AddRelativeForce(new Vector3 (thisBall.Speed, 0 ,0)); // launch the ball
+        if (context.started)
+        {
+            startCharge = true;
+            ballRigid.mass = thisBall.GravityStrength;
+            ballRigid.useGravity = false;
+        }
+        if (context.canceled)
+        {
+            thisBall.ThrownBy = gameObject; // set ball's thrown by to this player
+            // ball throw based off of speed
+            Vector3 throwDir = playerCamera.transform.forward;
+            ballRigid.AddForce(throwDir.normalized * thisBall.Speed/2 * chargePower, ForceMode.Impulse);
+            // direction
+            Vector3 curve = new Vector3(thisBall.DirectionStrength, (ballRigid.linearVelocity.y * 0) + 15f, 0f);
+            ballRigid.AddForce(curve * Time.deltaTime, ForceMode.Force);
+            ballRigid.angularDrag = 3f;
+            startCharge = false;
+            chargePower = 0;
+            ballRigid.useGravity = true;
+            BallHeldByPlayer = null;
+        }
        
     }
     public void OnCardUse(InputAction.CallbackContext context)
     {
-        //context.
-        //Debug.Log("Use card #", );
+        if (context.performed)
+        {
+            int cardNumber = context.action.GetBindingIndexForControl(context.control);
+            Debug.Log($"Use card #{cardNumber}");
+        }
     }
     private void Awake()
     {
-        controller = gameObject.AddComponent<CharacterController>();
+        controller = gameObject.GetComponent<CharacterController>();
     }
 
     private void OnEnable()
@@ -82,18 +126,48 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if (BallHeldByPlayer) BallHeldByPlayer.transform.position = transform.position + new Vector3(1f, 0f, 0f);
+        if (startCharge)
+        {
+            if (chargePower >= 1.2f && chargePower <= 2.0f)
+            {
+                chargePower += Time.deltaTime / 4f;
+            }
+            else if (chargePower <= 1.2f)
+            {
+                chargePower += Time.deltaTime / 2f;
+            }
+            else
+            {
+                chargePower = 2.0f;
+            }
+        }
         groundedPlayer = controller.isGrounded;
         if (groundedPlayer && playerVelocity.y < 0)
         {
             playerVelocity.y = 0f;
         }
 
-        Vector3 move = new Vector3(movementInput.x, 0, movementInput.y);
+        Vector3 move = transform.forward * movementInput.y + transform.right * movementInput.x;
         move = Vector3.ClampMagnitude(move, 1f);
 
         if (move != Vector3.zero)
         {
-            transform.forward = move;
+            transform.position = move;
+        }
+
+        Vector3 rotatePlayer = new Vector3(0, cameraInput.x, 0);
+
+        if (rotatePlayer != Vector3.zero)
+        {
+            transform.Rotate(rotatePlayer * Time.deltaTime * yawSensitivity);
+        }
+
+        if (cameraInput != Vector2.zero)
+        {
+            cameraPitch -= cameraInput.y * Time.deltaTime * pitchSensitivity;
+            cameraPitch = Mathf.Clamp(cameraPitch, -90f, 90f);
+            playerCamera.transform.localRotation = Quaternion.Euler(cameraPitch, 0, 0);
         }
 
         // Jump
@@ -109,4 +183,23 @@ public class PlayerController : MonoBehaviour
         Vector3 finalMove = (move * playerSpeed) + (playerVelocity.y * Vector3.up);
         controller.Move(finalMove * Time.deltaTime);
     }
+
+    // private void ApplyTransformations(Rigidbody ballRigid, Ball thisBall, InputAction.CallbackContext context)
+    // {
+    //     // // apply gravity effect
+    //     // ballRigid.mass *= thisBall.GravityStrength;
+    //     // // ball throw based off of speed
+    //     // Vector3 throwDir = playerCamera.transform.forward + playerCamera.transform.up * 0.2f;
+
+    //     // // on release
+    //     // if (context.canceled)
+    //     // {
+    //     //     ballRigid.AddForce(throwDir.normalized * thisBall.Speed * chargePower, ForceMode.Impulse);
+    //     //     // direction
+    //     //     Vector3 curve = new Vector3(thisBall.DirectionStrength, 0f, 0f);
+    //     //     ballRigid.AddForce(curve * Time.deltaTime, ForceMode.Force);
+    //     //     startCharge = false;
+    //     //     chargePower = 0;
+    //     }
 }
+
