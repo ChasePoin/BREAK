@@ -9,17 +9,21 @@ public class Ball : MonoBehaviour
     public float LargeSize = 5.00f;
     public float MediumSize = 2.50f;
 
-    public void AdjustSpeed(float delta)
+    public float AdjustSpeed(float delta)
     {
-        Speed *= delta;
+        return Speed *= delta;
     }
-    public void AdjustGravity(float delta)
+    public float AdjustGravity(float delta)
     {
-        GravityStrength *= delta;
+        return GravityStrength *= delta;
     }
-    public void AdjustDirection(float delta)
+    public float AdjustDirection(float delta)
     {
-        DirectionStrength *=  delta;
+        return DirectionStrength *= delta;
+    }
+    public float AdjustSize(float delta)
+    {
+        return Size *= delta;
     }
     public string CheckSize(float size)
     {
