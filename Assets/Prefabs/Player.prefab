@@ -137,13 +137,13 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2909012718282877866}
-  - component: {fileID: 6954647457304736566}
   - component: {fileID: 82314514295950952}
   - component: {fileID: 2809605855497277193}
   - component: {fileID: 3777049432255695701}
+  - component: {fileID: 8602039767922851973}
   m_Layer: 8
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -165,29 +165,6 @@ Transform:
   - {fileID: 2440393419926221136}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &6954647457304736566
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6558495489953477904}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 79b67710d6e2da4448df603a898eee0e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Example
-  playerSpeed: 5
-  jumpHeight: 1.5
-  gravityValue: -9.81
-  yawSensitivity: 200
-  pitchSensitivity: 200
-  playerCamera: {fileID: 4207437708802224720}
-  animator: {fileID: 2819494457541616868}
-  leftHand: {fileID: 3980655059539571349}
-  rightHand: {fileID: 4751187496756043259}
-  startCharge: 0
-  chargePower: 1
 --- !u!143 &82314514295950952
 CharacterController:
   m_ObjectHideFlags: 0
@@ -240,7 +217,7 @@ MonoBehaviour:
   m_ActionEvents:
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6954647457304736566}
+      - m_Target: {fileID: 8602039767922851973}
         m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
         m_MethodName: OnMove
         m_Mode: 0
@@ -256,7 +233,7 @@ MonoBehaviour:
     m_ActionName: Player/Movement
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6954647457304736566}
+      - m_Target: {fileID: 8602039767922851973}
         m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
         m_MethodName: OnCatch
         m_Mode: 0
@@ -272,7 +249,7 @@ MonoBehaviour:
     m_ActionName: Player/Catch
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6954647457304736566}
+      - m_Target: {fileID: 8602039767922851973}
         m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
         m_MethodName: OnLook
         m_Mode: 0
@@ -288,7 +265,7 @@ MonoBehaviour:
     m_ActionName: Player/LookingAround
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6954647457304736566}
+      - m_Target: {fileID: 8602039767922851973}
         m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
         m_MethodName: OnThrow
         m_Mode: 0
@@ -304,7 +281,7 @@ MonoBehaviour:
     m_ActionName: Player/Throw
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6954647457304736566}
+      - m_Target: {fileID: 8602039767922851973}
         m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
         m_MethodName: OnJump
         m_Mode: 0
@@ -320,7 +297,7 @@ MonoBehaviour:
     m_ActionName: Player/Jump
   - m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 6954647457304736566}
+      - m_Target: {fileID: 8602039767922851973}
         m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
         m_MethodName: OnCardUse
         m_Mode: 0
@@ -362,6 +339,32 @@ CapsuleCollider:
   m_Height: 1.827106
   m_Direction: 1
   m_Center: {x: 0, y: 0.9048128, z: 0}
+--- !u!114 &8602039767922851973
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6558495489953477904}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 79b67710d6e2da4448df603a898eee0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+  playerSpeed: 5
+  jumpHeight: 1.5
+  gravityValue: -9.81
+  yawSensitivity: 250
+  pitchSensitivity: 250
+  playerCamera: {fileID: 4207437708802224720}
+  animator: {fileID: 2819494457541616868}
+  leftHand: {fileID: 3980655059539571349}
+  rightHand: {fileID: 4751187496756043259}
+  startCharge: 0
+  chargePower: 1
+  maxCharge: 2
+  mediumCharge: 1.2
+  playerId: 0
 --- !u!1001 &8523712023093303669
 PrefabInstance:
   m_ObjectHideFlags: 0
