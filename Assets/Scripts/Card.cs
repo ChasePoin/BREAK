@@ -24,5 +24,9 @@ public class Card : MonoBehaviour
     public Rarity Rarity;
     public Image CardSprite;
 
-    public void UseCard() { }
+    public void UseCard(Ball ballToApplyTo = null, PlayerController playerToApplyTo = null)
+    {
+        string what = ballToApplyTo == null ? "player" : "ball";
+        Debug.Log("Applying " + CardName + " to " + what);
+    }
 }
