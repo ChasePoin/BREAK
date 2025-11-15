@@ -28,6 +28,8 @@ public class PlayerController : MonoBehaviour
     private Vector3 playerVelocity;
     private bool groundedPlayer;
     GameObject? BallHeldByPlayer;
+    public bool startCharge = false;
+    public float chargePower = 1f;
 
     public void OnMove(InputAction.CallbackContext context)
     {
@@ -49,7 +51,7 @@ public class PlayerController : MonoBehaviour
     public void OnCatch(InputAction.CallbackContext context)
     {
 
-        if (Physics.SphereCast(transform.position + controller.center, transform.position.y, transform.forward, out RaycastHit hit, 4) && BallHeldByPlayer == null)
+        if (Physics.SphereCast(transform.position + controller.center, transform.position.y, playerCamera.transform.forward, out RaycastHit hit, 4) && BallHeldByPlayer == null)
         {
             GameObject ballHit = hit.transform.gameObject;
             if (ballHit.tag == "Ball")
@@ -74,21 +76,30 @@ public class PlayerController : MonoBehaviour
     public void OnThrow(InputAction.CallbackContext context)
     {
         if (BallHeldByPlayer == null) return;
-        Ball thisBall = BallHeldByPlayer.GetComponent<Ball>();
-        thisBall.ThrownBy = gameObject; // set ball's thrown by to this player
         Rigidbody ballRigid = BallHeldByPlayer.GetComponent<Rigidbody>();
-        ApplyTransformations(ballRigid, thisBall);
-        BallHeldByPlayer = null;
-       
+        Ball thisBall = BallHeldByPlayer.GetComponent<Ball>();
         if (context.started)
         {
-            string control = context.control.name;
-            Debug.Log($"Throw Ball using {control}");
+            startCharge = true;
+            ballRigid.mass = thisBall.GravityStrength;
+            ballRigid.useGravity = false;
         }
         if (context.canceled)
         {
-            Debug.Log("Throw ball end");
+            thisBall.ThrownBy = gameObject; // set ball's thrown by to this player
+            // ball throw based off of speed
+            Vector3 throwDir = playerCamera.transform.forward;
+            ballRigid.AddForce(throwDir.normalized * thisBall.Speed/2 * chargePower, ForceMode.Impulse);
+            // direction
+            Vector3 curve = new Vector3(thisBall.DirectionStrength, (ballRigid.linearVelocity.y * 0) + 15f, 0f);
+            ballRigid.AddForce(curve * Time.deltaTime, ForceMode.Force);
+            ballRigid.angularDrag = 3f;
+            startCharge = false;
+            chargePower = 0;
+            ballRigid.useGravity = true;
+            BallHeldByPlayer = null;
         }
+       
     }
     public void OnCardUse(InputAction.CallbackContext context)
     {
@@ -116,6 +127,21 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         if (BallHeldByPlayer) BallHeldByPlayer.transform.position = transform.position + new Vector3(1f, 0f, 0f);
+        if (startCharge)
+        {
+            if (chargePower >= 1.2f && chargePower <= 2.0f)
+            {
+                chargePower += Time.deltaTime / 4f;
+            }
+            else if (chargePower <= 1.2f)
+            {
+                chargePower += Time.deltaTime / 2f;
+            }
+            else
+            {
+                chargePower = 2.0f;
+            }
+        }
         groundedPlayer = controller.isGrounded;
         if (groundedPlayer && playerVelocity.y < 0)
         {
@@ -158,15 +184,22 @@ public class PlayerController : MonoBehaviour
         controller.Move(finalMove * Time.deltaTime);
     }
 
-    private void ApplyTransformations(Rigidbody ballRigid, Ball thisBall)
-    {
-        // apply gravity effect
-        ballRigid.mass *= thisBall.GravityStrength;
-        // ball throw based off of speed
-        Vector3 throwDir = playerCamera.transform.forward + playerCamera.transform.up * 0.2f;
-        ballRigid.AddForce(throwDir.normalized * thisBall.Speed, ForceMode.Impulse);
-        // direction
-        Vector3 curve = new Vector3(thisBall.DirectionStrength, 0f, 0f);
-        ballRigid.AddForce(curve * Time.deltaTime, ForceMode.Force);
-    }
+    // private void ApplyTransformations(Rigidbody ballRigid, Ball thisBall, InputAction.CallbackContext context)
+    // {
+    //     // // apply gravity effect
+    //     // ballRigid.mass *= thisBall.GravityStrength;
+    //     // // ball throw based off of speed
+    //     // Vector3 throwDir = playerCamera.transform.forward + playerCamera.transform.up * 0.2f;
+
+    //     // // on release
+    //     // if (context.canceled)
+    //     // {
+    //     //     ballRigid.AddForce(throwDir.normalized * thisBall.Speed * chargePower, ForceMode.Impulse);
+    //     //     // direction
+    //     //     Vector3 curve = new Vector3(thisBall.DirectionStrength, 0f, 0f);
+    //     //     ballRigid.AddForce(curve * Time.deltaTime, ForceMode.Force);
+    //     //     startCharge = false;
+    //     //     chargePower = 0;
+    //     }
 }
+

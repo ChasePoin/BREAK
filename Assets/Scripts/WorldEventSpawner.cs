@@ -4,21 +4,26 @@ public class WorldEventSpawner : MonoBehaviour
 {
     public GameObject objToSpawn;
     public bool spawn;
+    public int maxObj = 10;
+    public int currentObjs;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        currentObjs = 0;
     }
-
     // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        if(spawn)
+        if (currentObjs < maxObj)
         {
-            spawnObject();
+            float chance = 1f - ((float)currentObjs / maxObj);  // goes from 1 → 0
+
+            if (Random.value < chance)
+            {
+                spawnObject();
+                currentObjs += 1;
+            }
         }
-        
     }
 
    public void spawnObject()
