@@ -27,7 +27,7 @@ public class PlayerController : MonoBehaviour
     private CharacterController controller;
     private Vector3 playerVelocity;
     private bool groundedPlayer;
-    GameObject BallHeldByPlayer;
+    GameObject? BallHeldByPlayer;
 
     public void OnMove(InputAction.CallbackContext context)
     {
@@ -49,13 +49,13 @@ public class PlayerController : MonoBehaviour
     public void OnCatch(InputAction.CallbackContext context)
     {
 
-        if (Physics.SphereCast(transform.position + controller.center, transform.position.y, transform.forward, out RaycastHit hit, 10))
+        if (Physics.SphereCast(transform.position + controller.center, transform.position.y, transform.forward, out RaycastHit hit, 4) && BallHeldByPlayer == null)
         {
             GameObject ballHit = hit.transform.gameObject;
             if (ballHit.tag == "Ball")
             {
                 BallHeldByPlayer = ballHit;
-                ballHit.transform.position = controller.center + new Vector3(1f, 0f, 0f);
+                ballHit.transform.position = transform.position + new Vector3(.5f, 0f, 0f);
                 Debug.Log("Caught the ball.");
             }
             else
@@ -71,9 +71,12 @@ public class PlayerController : MonoBehaviour
     // needs to take transformations and effects applied to the ball and kick it off
     public void OnThrow(InputAction.CallbackContext context)
     {
+        if (BallHeldByPlayer == null) return;
         Ball thisBall = BallHeldByPlayer.GetComponent<Ball>();
-        thisBall.ThrownBy = this.gameObject; // set ball's thrown by to this player
-        BallHeldByPlayer.GetComponent<Rigidbody>().AddRelativeForce(new Vector3 (thisBall.Speed, 0 ,0)); // launch the ball
+        thisBall.ThrownBy = gameObject; // set ball's thrown by to this player
+        Rigidbody ballRigid = BallHeldByPlayer.GetComponent<Rigidbody>();
+        ApplyTransformations(ballRigid, thisBall);
+        BallHeldByPlayer = null;
        
     }
     public void OnCardUse(InputAction.CallbackContext context)
@@ -98,6 +101,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
+        if (BallHeldByPlayer) BallHeldByPlayer.transform.position = transform.position + new Vector3(1f, 0f, 0f);
         groundedPlayer = controller.isGrounded;
         if (groundedPlayer && playerVelocity.y < 0)
         {
@@ -138,5 +142,17 @@ public class PlayerController : MonoBehaviour
         // Combine horizontal and vertical movement
         Vector3 finalMove = (move * playerSpeed) + (playerVelocity.y * Vector3.up);
         controller.Move(finalMove * Time.deltaTime);
+    }
+
+    private void ApplyTransformations(Rigidbody ballRigid, Ball thisBall)
+    {
+        // apply gravity effect
+        ballRigid.mass *= thisBall.GravityStrength;
+        // ball throw based off of speed
+        Vector3 throwDir = gameObject.transform.forward + gameObject.transform.up * 0.32f;
+        ballRigid.AddForce(throwDir.normalized * thisBall.Speed, ForceMode.Impulse);
+        // direction
+        Vector3 curve = new Vector3(thisBall.DirectionStrength, 0f, 0f);
+        ballRigid.AddForce(curve * Time.deltaTime, ForceMode.Force);
     }
 }
