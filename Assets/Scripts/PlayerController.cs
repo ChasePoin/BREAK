@@ -37,6 +37,9 @@ public class PlayerController : MonoBehaviour
     GameObject BallHeldByPlayer;
     public bool startCharge = false;
     public float chargePower = 1f;
+    public float maxCharge = 2f;
+    public float mediumCharge = 1.2f;
+    public int playerId = 0;
 
     public void OnMove(InputAction.CallbackContext context)
     {
@@ -61,7 +64,7 @@ public class PlayerController : MonoBehaviour
     public void OnCatch(InputAction.CallbackContext context)
     {
 
-        if (Physics.SphereCast(transform.position + controller.center, transform.position.y, playerCamera.transform.forward, out RaycastHit hit, 4) && BallHeldByPlayer == null)
+        if (Physics.SphereCast(transform.position + controller.center, transform.position.y, playerCamera.transform.forward, out RaycastHit hit, 5) && BallHeldByPlayer == null)
         {
             GameObject ballHit = hit.transform.gameObject;
             if (ballHit.tag == "Ball")
@@ -124,11 +127,23 @@ public class PlayerController : MonoBehaviour
             Vector3 throwDir = playerCamera.transform.forward;
             float throwStrength = thisBall.Speed * 0.5f * chargePower;
 
+            // move ball to head
+           thisBall.transform.position = new Vector3(playerCamera.transform.position.x, playerCamera.transform.position.y,thisBall.transform.position.z);
+
             // throw impulse
             ballRigid.AddForce(throwDir * throwStrength, ForceMode.Impulse);
 
             // curve impulse (side + consistent upward arc)
-            Vector3 curve = new Vector3(thisBall.DirectionStrength, 6f, 0f);
+            float upward;
+            if (chargePower <= mediumCharge)
+            {
+                upward = 4f;
+            }
+            else
+            {
+                upward = 2f;
+            }
+            Vector3 curve = new Vector3(thisBall.DirectionStrength, upward, 0f);
             ballRigid.AddForce(curve, ForceMode.Impulse);
 
             // cleanup
@@ -182,17 +197,17 @@ public class PlayerController : MonoBehaviour
         
         if (startCharge)
         {
-            if (chargePower >= 1.2f && chargePower <= 2.0f)
+            if (chargePower >= mediumCharge && chargePower <= maxCharge)
             {
                 chargePower += Time.deltaTime / 4f;
             }
-            else if (chargePower <= 1.2f)
+            else if (chargePower <= mediumCharge)
             {
-                chargePower += Time.deltaTime / 2f;
+                chargePower += Time.deltaTime / maxCharge;
             }
             else
             {
-                chargePower = 2.0f;
+                chargePower = maxCharge;
             }
         }
         groundedPlayer = controller.isGrounded;
