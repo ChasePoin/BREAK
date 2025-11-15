@@ -20,6 +20,7 @@ public class PlayerController : MonoBehaviour
     private CharacterController controller;
     private Vector3 playerVelocity;
     private bool groundedPlayer;
+    GameObject BallHeldByPlayer;
 
     public void OnMove(InputAction.CallbackContext context)
     {
@@ -33,13 +34,18 @@ public class PlayerController : MonoBehaviour
     {
         jumped = context.ReadValue<bool>();
     }
+
+    // needs did I properly catch this logic and to assign BallHeldByPlayer if successful
     public void OnCatch(InputAction.CallbackContext context)
     {
+        // BallHeldByPlayer =
         Debug.Log("Catch the ball.");
     }
+    // needs to take transformations and effects applied to the ball and kick it off
     public void OnThrow(InputAction.CallbackContext context)
     {
-        Ball.ThrownBy = this.gameObject;
+        Ball thisBall = BallHeldByPlayer.GetComponent<Ball>();
+        thisBall.ThrownBy = this.gameObject;
     }
     public void OnCardUse(InputAction.CallbackContext context)
     {
