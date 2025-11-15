@@ -18,6 +18,8 @@ public class PlayerController : MonoBehaviour
     private float pitchSensitivity = 250.0f;
     [SerializeField]
     private Camera playerCamera;
+    [SerializeField]
+    private Animator animator;
     private Vector2 movementInput = Vector2.zero;
     private Vector2 cameraInput = Vector2.zero;
     private float cameraPitch = 0f;
@@ -39,6 +41,7 @@ public class PlayerController : MonoBehaviour
     {
         if (context.performed)
             jumped = true;
+            animator.SetTrigger("Jump");
         if (context.canceled)
             jumped = false;
     }
@@ -124,5 +127,8 @@ public class PlayerController : MonoBehaviour
         // Combine horizontal and vertical movement
         Vector3 finalMove = (move * playerSpeed) + (playerVelocity.y * Vector3.up);
         controller.Move(finalMove * Time.deltaTime);
+
+        animator.SetFloat("ForwardSpeed", Vector3.Dot(finalMove, transform.forward));
+        animator.SetFloat("SideSpeed", Vector3.Dot(finalMove, transform.forward));
     }
 }
