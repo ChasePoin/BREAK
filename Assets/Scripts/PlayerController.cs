@@ -43,9 +43,16 @@ public class PlayerController : MonoBehaviour
         if (Physics.SphereCast(transform.position + controller.center, transform.position.y, transform.forward, out RaycastHit hit, 10))
         {
             GameObject ballHit = hit.transform.gameObject;
-            BallHeldByPlayer = ballHit;
-            ballHit.transform.position = controller.center + new Vector3(1f, 0f, 0f);
-            Debug.Log("Caught the ball.");
+            if (ballHit.tag == "Ball")
+            {
+                BallHeldByPlayer = ballHit;
+                ballHit.transform.position = controller.center + new Vector3(1f, 0f, 0f);
+                Debug.Log("Caught the ball.");
+            }
+            else
+            {
+                Debug.Log("Caught someting... It wasn't a ball!");
+            }
         }
         else
         {
