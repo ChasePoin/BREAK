@@ -47,7 +47,7 @@ public class leaderboard : MonoBehaviour
         {
             var pair = sortedByValueDesc[0];
             t1.text = "Player "+pair.Key.ToString();
-            t2.text = pair.Value.ToString();
+            t5.text = pair.Value.ToString();
         }
         catch (Exception ex)
         {
@@ -57,8 +57,8 @@ public class leaderboard : MonoBehaviour
         try
         {
             var pair = sortedByValueDesc[1];
-            t3.text = "Player "+pair.Key.ToString();
-            t4.text = pair.Value.ToString();
+            t2.text = "Player "+pair.Key.ToString();
+            t6.text = pair.Value.ToString();
         }
         catch (Exception ex)
         {
@@ -68,8 +68,8 @@ public class leaderboard : MonoBehaviour
         try
         {
             var pair = sortedByValueDesc[2];
-            t5.text = "Player "+pair.Key.ToString();
-            t6.text = pair.Value.ToString();
+            t3.text = "Player "+pair.Key.ToString();
+            t7.text = pair.Value.ToString();
         }
         catch (Exception ex)
         {
@@ -79,7 +79,7 @@ public class leaderboard : MonoBehaviour
 try
         {
             var pair = sortedByValueDesc[3];
-            t7.text = "Player "+pair.Key.ToString();
+            t4.text = "Player "+pair.Key.ToString();
             t8.text = pair.Value.ToString();
         }
         catch (Exception ex)
