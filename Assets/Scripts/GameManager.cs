@@ -32,6 +32,13 @@ public class GameManager : MonoBehaviour
                 PlayerController ppfb = player.GetComponent<PlayerController>();
                 if (start)
                 {
+                    int culledPlayerLayer = LayerMask.NameToLayer($"Player{nextPlayerId}");
+                    if (culledPlayerLayer != -1)
+                    {
+                        int layerMaskToHide = 1 << culledPlayerLayer;
+                        ppfb.playerCamera.cullingMask &= ~layerMaskToHide;
+                        ppfb.playerMesh.gameObject.layer = culledPlayerLayer;
+                    }
                     ppfb.playerId = nextPlayerId;
                     players[ppfb.playerId] = 0;
                     nextPlayerId++;

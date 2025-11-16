@@ -363,6 +363,7 @@ MonoBehaviour:
   rightHand: {fileID: 4751187496756043259}
   hud: {fileID: 9072368206176654120}
   cards: []
+  playerMesh: {fileID: 4741097600270438683}
   startCharge: 0
   chargePower: 1
   maxCharge: 2
@@ -461,6 +462,11 @@ Animator:
 --- !u!4 &3980655059539571349 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4716515943889791968, guid: 33c37d6b52cb0304699de254a89fba76, type: 3}
+  m_PrefabInstance: {fileID: 8523712023093303669}
+  m_PrefabAsset: {fileID: 0}
+--- !u!137 &4741097600270438683 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: -5223738197042771858, guid: 33c37d6b52cb0304699de254a89fba76, type: 3}
   m_PrefabInstance: {fileID: 8523712023093303669}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &4751187496756043259 stripped
