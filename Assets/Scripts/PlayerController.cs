@@ -273,14 +273,25 @@ public class PlayerController : MonoBehaviour
         if (thisBall.ThrownBy != gameObject && thisBall.ThrownBy != null)
         {
             PlayerController otherPlayer = thisBall.ThrownBy.GetComponent<PlayerController>();
+            thisBall.ThrownBy = null;
             GameManager.gm.players[otherPlayer.playerId] += 1; // they get a point!
             GameManager.gm.aliveStatus[playerId] = false;
             Debug.Log("player " + otherPlayer.playerId + " scored a point. Total points: " + GameManager.gm.players[otherPlayer.playerId]);
             Debug.Log("player " + playerId + " got tagged by a ball! Alive Status: " + GameManager.gm.aliveStatus[playerId]);
-            playerCamera.enabled = false;
-            thisBall.ThrownBy = null;
-            Destroy(gameObject);
+            StartCoroutine(killPlayer(otherPlayer));
         }
+    }
+    IEnumerator killPlayer(PlayerController otherPlayer)
+    {
+        playerCamera.clearFlags = CameraClearFlags.SolidColor;
+        playerCamera.backgroundColor = Color.black;
+        while (playerCamera.farClipPlane > 0.3)
+        {
+            playerCamera.farClipPlane -= 1000 * Time.deltaTime;
+            yield return new WaitForEndOfFrame();
+        }
+        playerCamera.enabled = false;
+        Destroy(gameObject);
     }
     void Update()
     {

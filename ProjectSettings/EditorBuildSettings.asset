@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
   - enabled: 1
+    path: Assets/Scenes/StartScene.unity
+    guid: d5783189d9e75ad459df989f20816a59
+  - enabled: 1
     path: Assets/Scenes/skybox test.unity
     guid: 2399214cabcfa0b4db2c310e05f61d70
   m_configObjects:
