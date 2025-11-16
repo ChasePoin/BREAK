@@ -30,6 +30,10 @@ public class PlayerController : MonoBehaviour
     private HUDController hud;
     [SerializeField]
     private List<Card> cards;
+    [SerializeField]
+    private int maxCards = 3;
+    [SerializeField]
+    private List<GameObject> possibleCards;
     public SkinnedMeshRenderer playerMesh;
     private bool ballInLeftHand = false;
     private Vector2 movementInput = Vector2.zero;
@@ -42,7 +46,7 @@ public class PlayerController : MonoBehaviour
     private bool groundedPlayer;
     GameObject BallHeldByPlayer;
     public bool startCharge = false;
-    public float chargePower = 1f;
+    public float chargePower = 0f;
     public float reachRadius = 2f;
     public float reachRange = 2f;
     public float maxCharge = 2f;
@@ -196,7 +200,7 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         controller = gameObject.GetComponent<CharacterController>();
-        chargePower = 0;
+        GenerateRandomCards();
     }
 
     private void OnEnable()
@@ -296,6 +300,15 @@ public class PlayerController : MonoBehaviour
 
         animator.SetFloat("ForwardSpeed", Vector3.Dot(finalMove, transform.forward));
         animator.SetFloat("SideSpeed", Vector3.Dot(finalMove, transform.right));
+    }
+
+    public void GenerateRandomCards()
+    {
+        for (int i = 0; i < maxCards; ++i)
+        {
+            cards.Add(possibleCards[Random.Range(0, possibleCards.Count)].GetComponent<Card>());
+            // Debug.Log("choosing: " + possibleCards[Random.Range(0, possibleCards.Count)].GetComponent<Card>());
+        }
     }
 }
 

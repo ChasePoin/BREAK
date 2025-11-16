@@ -363,9 +363,13 @@ MonoBehaviour:
   rightHand: {fileID: 4751187496756043259}
   hud: {fileID: 9072368206176654120}
   cards: []
+  maxCards: 3
+  possibleCards: []
   playerMesh: {fileID: 4741097600270438683}
   startCharge: 0
   chargePower: 1
+  reachRadius: 2
+  reachRange: 2
   maxCharge: 2
   mediumCharge: 1.2
   playerId: 0

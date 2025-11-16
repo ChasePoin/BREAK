@@ -12971,18 +12971,6 @@ PrefabInstance:
       value: PlayerManager
       objectReference: {fileID: 0}
     - target: {fileID: 6540427271782165392, guid: 5876d3b3337c31842a4eb61ee065ed78, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6540427271782165392, guid: 5876d3b3337c31842a4eb61ee065ed78, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6540427271782165392, guid: 5876d3b3337c31842a4eb61ee065ed78, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6540427271782165392, guid: 5876d3b3337c31842a4eb61ee065ed78, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -13022,46 +13010,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6540427271782165392, guid: 5876d3b3337c31842a4eb61ee065ed78, type: 3}
-      propertyPath: m_ConstrainProportionsScale
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7423087410647281413, guid: 5876d3b3337c31842a4eb61ee065ed78, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -4.35
-      objectReference: {fileID: 0}
-    - target: {fileID: 7423087410647281413, guid: 5876d3b3337c31842a4eb61ee065ed78, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 10.25
-      objectReference: {fileID: 0}
-    - target: {fileID: 7423087410647281413, guid: 5876d3b3337c31842a4eb61ee065ed78, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: -9.32
-      objectReference: {fileID: 0}
-    - target: {fileID: 7937527864347719628, guid: 5876d3b3337c31842a4eb61ee065ed78, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -6.96954
-      objectReference: {fileID: 0}
-    - target: {fileID: 7937527864347719628, guid: 5876d3b3337c31842a4eb61ee065ed78, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 9.08
-      objectReference: {fileID: 0}
-    - target: {fileID: 7937527864347719628, guid: 5876d3b3337c31842a4eb61ee065ed78, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 24.939999
-      objectReference: {fileID: 0}
-    - target: {fileID: 8701920707468036748, guid: 5876d3b3337c31842a4eb61ee065ed78, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: -16.08
-      objectReference: {fileID: 0}
-    - target: {fileID: 8701920707468036748, guid: 5876d3b3337c31842a4eb61ee065ed78, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 7.94
-      objectReference: {fileID: 0}
-    - target: {fileID: 8701920707468036748, guid: 5876d3b3337c31842a4eb61ee065ed78, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 11.14
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -13075,3 +13023,4 @@ SceneRoots:
   - {fileID: 1795653581790092229}
   - {fileID: 407450379}
   - {fileID: 641598079}
+  - {fileID: 1375476633}
