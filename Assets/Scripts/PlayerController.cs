@@ -3,6 +3,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
@@ -25,6 +26,10 @@ public class PlayerController : MonoBehaviour
     private Transform leftHand;
     [SerializeField]
     private Transform rightHand;
+    [SerializeField]
+    private HUDController hud;
+    [SerializeField]
+    private List<Card> cards;
     private bool ballInLeftHand = false;
     private Vector2 movementInput = Vector2.zero;
     private Vector2 cameraInput = Vector2.zero;
@@ -165,6 +170,12 @@ public class PlayerController : MonoBehaviour
         if (context.performed)
         {
             int cardNumber = context.action.GetBindingIndexForControl(context.control);
+            if (hud.UseCard(cardNumber))
+            {
+                hud.DeleteCardImage(cardNumber);
+                // cards[cardNumber].UseCard();
+                // cards[cardNumber] = null;
+            }
             Debug.Log($"Use card #{cardNumber}");
         }
     }
