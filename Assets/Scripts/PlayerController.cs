@@ -43,6 +43,8 @@ public class PlayerController : MonoBehaviour
     GameObject BallHeldByPlayer;
     public bool startCharge = false;
     public float chargePower = 1f;
+    public float reachRadius = 2f;
+    public float reachRange = 2f;
     public float maxCharge = 2f;
     public float mediumCharge = 1.2f;
     public int playerId = 0;
@@ -65,7 +67,7 @@ public class PlayerController : MonoBehaviour
     // needs did I properly catch this logic and to assign BallHeldByPlayer if successful
     public void OnCatch(InputAction.CallbackContext context)
     {
-        if (Physics.SphereCast(playerCamera.transform.position + controller.center, playerCamera.transform.position.y, playerCamera.transform.forward, out RaycastHit hit, 5))
+        if (Physics.SphereCast(playerCamera.transform.position, reachRadius, playerCamera.transform.forward, out RaycastHit hit, reachRange))
         {
             if (BallHeldByPlayer == null) {
                 GameObject ballHit = hit.transform.gameObject;
@@ -82,6 +84,9 @@ public class PlayerController : MonoBehaviour
                     GameObject previousPlayerGO = ballHit.GetComponent<Ball>().ThrownBy;
                     if (ballCollider != null && previousPlayerGO != null)
                     {
+                        PlayerController previousPlayerController = previousPlayerGO.GetComponent<PlayerController>();
+                        previousPlayerController.hud.ball.enabled = false;
+                        previousPlayerController.BallHeldByPlayer = null;
                         CapsuleCollider previousPlayerCollider = previousPlayerGO.GetComponent<CapsuleCollider>();
                         if (previousPlayerCollider != null) Physics.IgnoreCollision(ballCollider, previousPlayerCollider, false);
                     }
@@ -98,6 +103,7 @@ public class PlayerController : MonoBehaviour
             {
                 GameObject ballBlocked = hit.transform.gameObject;
                 if (ballBlocked.tag == "Ball") ballBlocked.GetComponent<Rigidbody>().linearVelocity *= -1;
+                ballBlocked.GetComponent<Ball>().ThrownBy = gameObject;
             }
         }
         else
@@ -135,7 +141,7 @@ public class PlayerController : MonoBehaviour
 
         float throwStrength = thisBall.Speed * 0.5f + chargePower;
         
-        thisBall.transform.position = playerCamera.transform.position + playerCamera.transform.forward * 1.2f;
+        thisBall.transform.position = playerCamera.transform.position + playerCamera.transform.forward * 1.5f;
 
         ballRigid.constraints = RigidbodyConstraints.FreezePositionY;
 
@@ -211,6 +217,7 @@ public class PlayerController : MonoBehaviour
             PlayerController otherPlayer = thisBall.ThrownBy.GetComponent<PlayerController>();
             GameManager.gm.players[otherPlayer.playerId] += 1; // they get a point!
             Debug.Log("player " + otherPlayer.playerId + " scored a point. Total points: " + GameManager.gm.players[otherPlayer.playerId]);
+            playerCamera.enabled = false;
             Destroy(gameObject);
         }
     }
@@ -262,7 +269,7 @@ public class PlayerController : MonoBehaviour
         if (cameraInput != Vector2.zero)
         {
             cameraPitch -= cameraInput.y * Time.deltaTime * pitchSensitivity;
-            cameraPitch = Mathf.Clamp(cameraPitch, -25f, 90f);
+            cameraPitch = Mathf.Clamp(cameraPitch, -90f, 90f);
             playerCamera.transform.localRotation = Quaternion.Euler(cameraPitch, 0, 0);
         }
 
