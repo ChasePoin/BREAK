@@ -55,4 +55,29 @@ public class HUDController : MonoBehaviour
             card.rectTransform.anchoredPosition = curPos;
         }
     }
+
+    public void SetBarColors(int playerId)
+    {
+        Image ChargeBarColor = chargeMeter.fillRect.GetComponent<Image>();
+        Debug.Log(chargeMeter.fillRect);
+        Debug.Log(ChargeBarColor);
+        switch (playerId)
+        {
+            case 1:
+                ChargeBarColor.color = Color.blue;
+                break;
+            case 2:
+                ChargeBarColor.color = Color.red;
+                break;
+            case 3:
+                ChargeBarColor.color = Color.green;
+                break;
+            case 4:
+                ChargeBarColor.color = Color.yellow;
+                break;
+            default:
+                break;
+        }
+        
+    }
 }
