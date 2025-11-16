@@ -84,6 +84,7 @@ public class PlayerController : MonoBehaviour
                     CapsuleCollider previousPlayerCollider = previousPlayerGO.GetComponent<CapsuleCollider>();
                     if (previousPlayerCollider != null) Physics.IgnoreCollision(ballCollider, previousPlayerCollider, false);
                 }
+                hud.ball.enabled = true;
                 Debug.Log("Caught the ball.");
             }
             else
@@ -120,7 +121,7 @@ public class PlayerController : MonoBehaviour
             }
         }
         if (context.canceled)
-{
+        {
         Vector3 throwDir = playerCamera.transform.forward;
         throwDir.Normalize();
 
@@ -136,7 +137,7 @@ public class PlayerController : MonoBehaviour
         
         // ballRigid.AddForce(Vector3.up * upward, ForceMode.Impulse);
 
-      
+    
         ballRigid.useGravity = true;
         ballRigid.constraints = RigidbodyConstraints.None;
         thisBall.ThrownBy = gameObject;
@@ -145,7 +146,19 @@ public class PlayerController : MonoBehaviour
         chargePower = 0;
         BallHeldByPlayer.layer = LayerMask.NameToLayer("Balls");
         BallHeldByPlayer = null;
-}
+
+        // anim triggers
+        if (context.control.name == "rightTrigger")
+        {
+            animator.SetTrigger("EndThrow");
+        }
+        else 
+        {
+            ballInLeftHand = false;
+            animator.SetTrigger("EndThrowLeft");
+        }
+        hud.ball.enabled = false;
+        }
        
     }
     public void OnCardUse(InputAction.CallbackContext context)
@@ -165,6 +178,7 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         controller = gameObject.GetComponent<CharacterController>();
+        chargePower = 0;
     }
 
     private void OnEnable()
@@ -212,6 +226,7 @@ public class PlayerController : MonoBehaviour
                 chargePower = maxCharge;
             }
         }
+        hud.chargeMeter.value = chargePower / maxCharge;
         groundedPlayer = controller.isGrounded;
         if (groundedPlayer && playerVelocity.y < 0)
         {

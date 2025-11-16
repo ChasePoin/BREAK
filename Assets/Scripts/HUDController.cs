@@ -7,6 +7,9 @@ public class HUDController : MonoBehaviour
 {
     [SerializeField]
     public List<Image> cards;
+    public Image ball;
+    public bool showBall;
+    public Slider chargeMeter;
     public bool UseCard(int cardIndex)
     {
         if (cards[cardIndex].rectTransform.anchoredPosition.y < -50)
