@@ -65,7 +65,7 @@ public class PlayerController : MonoBehaviour
     public void OnCatch(InputAction.CallbackContext context)
     {
 
-        if (Physics.SphereCast(playerCamera.transform.position + controller.center, transform.position.y, playerCamera.transform.forward, out RaycastHit hit, 5) && BallHeldByPlayer == null)
+        if (Physics.SphereCast(playerCamera.transform.position + controller.center, playerCamera.transform.position.y, playerCamera.transform.forward, out RaycastHit hit, 5) && BallHeldByPlayer == null)
         {
             GameObject ballHit = hit.transform.gameObject;
             if (ballHit.tag == "Ball")
@@ -139,6 +139,7 @@ public class PlayerController : MonoBehaviour
       
         ballRigid.useGravity = true;
         ballRigid.constraints = RigidbodyConstraints.None;
+        thisBall.ThrownBy = gameObject;
 
         startCharge = false;
         chargePower = 0;
@@ -178,6 +179,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        Debug.Log("hi");
         GameObject whatEntered = collision.gameObject;
         Ball thisBall = whatEntered.GetComponent<Ball>();
         // check if a ball entered
