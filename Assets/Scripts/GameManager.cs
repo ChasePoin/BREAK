@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
+using System.Collections;
 
 
 
@@ -8,16 +10,26 @@ public class GameManager : MonoBehaviour
 {
     // map of players to scores
     public Dictionary<int, int> players = new Dictionary<int, int>();
+    public Dictionary<int, bool> aliveStatus = new Dictionary<int, bool>();
     private PlayerInputManager pim;
     int currentPlayers = 0;
     public GameObject playerPrefab;
     public int nextPlayerId = 1;
+    public int numRounds = 5;
+    public int currentRound = 0;
     static public GameManager gm;
+    public string scene = "skybox test";
+    public bool isRoundEnding = false;
     void Awake()
     {
+        if (gm != null) {
+            Destroy(gameObject);
+            return;
+        }
         gm = this;
         pim = this.GetComponent<PlayerInputManager>();
         DontDestroyOnLoad(gameObject);
+        Debug.Log("test");
         SpawnPlayers(true);
     }
 
@@ -26,7 +38,7 @@ public class GameManager : MonoBehaviour
         foreach (Transform childTransform in transform)
         {
             SpawnPoint sp = childTransform.gameObject.GetComponent<SpawnPoint>();
-            if (!sp.haveISpawnedSomebody)
+            if (!sp.haveISpawnedSomebody && currentPlayers < pim.maxPlayerCount)
             {
                 float random = Random.value;
                 if (random > .25f) continue;
@@ -43,6 +55,7 @@ public class GameManager : MonoBehaviour
                     }
                     ppfb.playerId = nextPlayerId;
                     players[ppfb.playerId] = 0;
+                    aliveStatus[ppfb.playerId] = true;
                     nextPlayerId++;
                     Debug.Log(ppfb.playerId + ": " + players[ppfb.playerId]);
                 }
@@ -59,23 +72,96 @@ public class GameManager : MonoBehaviour
             }
         }
         if (currentPlayers != pim.maxPlayerCount) SpawnPlayers(start);
+        isRoundEnding = false;
     }
     // need to reset players so we can spawn them in each new scene
     public void ResetPlayers()
     {
         foreach (Transform childTransform in transform)
         {
-            SpawnPoint sp = childTransform.gameObject.GetComponent<SpawnPoint>();
+            SpawnPoint sp = childTransform.GetComponent<SpawnPoint>();
             sp.haveISpawnedSomebody = false;
 
             foreach (Transform gc in childTransform)
             {
                 Destroy(gc.gameObject);
-                currentPlayers--;
             }
         }
+        List<int> keys = new List<int>(aliveStatus.Keys);
+        foreach (int id in keys)
+        {
+            aliveStatus[id] = true;
+        }
+
+        currentPlayers = 0;
         nextPlayerId = 1;
+        currentRound += 1;
         SpawnPlayers(false);
+
     }
+
+
+    public void FixedUpdate()
+    {
+        if (isRoundEnding) return;
+        var alivePlayers = CheckRemainingPlayers();
+        if (alivePlayers.count == 1) isRoundEnding = true;
+        ProcessAliveCount(alivePlayers.count, alivePlayers.ids);
+
+    }
+
+    // leaving as an int in case we want to do special logic based off of players remaining later
+    public (int count, List<int> ids) CheckRemainingPlayers()
+    {
+        int count = 0;
+        List<int> ids = new List<int>();
+        foreach(var entry in aliveStatus)
+        {
+            int playerid = entry.Key;
+            bool alive = entry.Value;
+
+            if (alive) 
+            {
+                count += 1;
+                ids.Add(playerid);
+            }
+        }
+
+        return (count, ids);
+    }
+
+    public void ProcessAliveCount(int aliveCount, List<int> aliveIds)
+    {
+        if (aliveCount == 1 && currentRound < numRounds)
+        {
+            players[aliveIds[0]] += 1;
+            StartCoroutine(EndRound());
+            return;
+        }
+        else if (aliveCount == 0 && currentRound < numRounds && !isRoundEnding)
+        {
+            StartCoroutine(EndRound());
+            return;
+        }
+    }
+
+    public IEnumerator EndRound()
+    {
+        yield return VictoryCountdown(5);
+        ResetPlayers();
+        SceneManager.LoadScene(scene);
+    }
+
+    IEnumerator VictoryCountdown(int seconds)
+    {
+        int counter = seconds;
+        while (counter > 0)
+        {
+            Debug.Log(counter);
+            yield return new WaitForSeconds(1);
+            counter--;
+        }
+    }
+
 
 }

@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6540427271782165392}
   - component: {fileID: 8673947569460163925}
+  - component: {fileID: 1928960762858520256}
   m_Layer: 0
   m_Name: PlayerManager
   m_TagString: Untagged
@@ -53,7 +54,7 @@ MonoBehaviour:
   m_NotificationBehavior: 0
   m_MaxPlayerCount: 4
   m_AllowJoining: 1
-  m_JoinBehavior: 0
+  m_JoinBehavior: 2
   m_PlayerJoinedEvent:
     m_PersistentCalls:
       m_Calls: []
@@ -82,6 +83,20 @@ MonoBehaviour:
     y: 0
     width: 1
     height: 1
+--- !u!114 &1928960762858520256
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6380096195234785466}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50dd0a2b7517dd9479c85c77184026ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameManager
+  playerPrefab: {fileID: 6558495489953477904, guid: 1523e439462d69c43aec3b5d03ac0dab, type: 3}
+  nextPlayerId: 1
 --- !u!1001 &1275658927336632678
 PrefabInstance:
   m_ObjectHideFlags: 0
