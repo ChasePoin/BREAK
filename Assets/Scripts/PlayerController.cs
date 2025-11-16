@@ -202,7 +202,9 @@ public class PlayerController : MonoBehaviour
         {
             PlayerController otherPlayer = thisBall.ThrownBy.GetComponent<PlayerController>();
             GameManager.gm.players[otherPlayer.playerId] += 1; // they get a point!
+            GameManager.gm.aliveStatus[playerId] = false;
             Debug.Log("player " + otherPlayer.playerId + " scored a point. Total points: " + GameManager.gm.players[otherPlayer.playerId]);
+            Debug.Log("player " + playerId + " got tagged by a ball! Alive Status: " + GameManager.gm.aliveStatus[playerId]);
             Destroy(gameObject);
         }
     }
