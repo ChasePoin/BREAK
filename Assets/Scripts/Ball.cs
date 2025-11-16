@@ -9,9 +9,19 @@ public class Ball : MonoBehaviour
     public GameObject ThrownBy;
     public float LargeSize = 5.00f;
     public float MediumSize = 2.50f;
+    public bool catchable = true;
     public void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.tag != "Player") ThrownBy = null;
+        if (collision.gameObject.tag != "Player")
+        {
+            ThrownBy = null; 
+            catchable = true;
+            ParticleSystem ps = gameObject.GetComponent<ParticleSystem>();
+            if (ps != null)
+            {
+                Destroy(ps);
+            }
+        }
     }
     public float AdjustSpeed(float delta)
     {
