@@ -93,11 +93,11 @@ public class PlayerController : MonoBehaviour
                         previousPlayerController.hud.ball.enabled = false;
                         previousPlayerController.BallHeldByPlayer = null;
                         CapsuleCollider previousPlayerCollider = previousPlayerGO.GetComponent<CapsuleCollider>();
+                        chargePower = maxCharge;
                         if (previousPlayerCollider != null) Physics.IgnoreCollision(ballCollider, previousPlayerCollider, false);
                     }
                     ballHit.layer = LayerMask.NameToLayer($"Player{playerId}");
                     hud.ball.enabled = true;
-                    chargePower = maxCharge;
                     Debug.Log("Caught the ball.");
                 }
                 else
@@ -229,6 +229,11 @@ public class PlayerController : MonoBehaviour
             i++;
             if (i > 2) break;
         }
+        
+    }
+    private void Start()
+    {
+        hud.SetBarColors(playerId);
     }
     public void ModifySpeed(float multiplier, float seconds)
     {
