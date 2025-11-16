@@ -19,7 +19,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private float pitchSensitivity = 250.0f;
     [SerializeField]
-    private Camera playerCamera;
+    public Camera playerCamera;
     [SerializeField]
     private Animator animator;
     [SerializeField]
@@ -30,6 +30,7 @@ public class PlayerController : MonoBehaviour
     private HUDController hud;
     [SerializeField]
     private List<Card> cards;
+    public SkinnedMeshRenderer playerMesh;
     private bool ballInLeftHand = false;
     private Vector2 movementInput = Vector2.zero;
     private Vector2 cameraInput = Vector2.zero;
@@ -84,6 +85,7 @@ public class PlayerController : MonoBehaviour
                     CapsuleCollider previousPlayerCollider = previousPlayerGO.GetComponent<CapsuleCollider>();
                     if (previousPlayerCollider != null) Physics.IgnoreCollision(ballCollider, previousPlayerCollider, false);
                 }
+                ballHit.layer = LayerMask.NameToLayer($"Player{playerId}");
                 hud.ball.enabled = true;
                 Debug.Log("Caught the ball.");
             }
