@@ -24,6 +24,7 @@ public class GameManager : MonoBehaviour
     public bool isRoundEnding = false;
     [SerializeField]
     private GameObject RoundEndCamera;
+    public int maxBalls = 10;
     void Awake()
     {
         if (gm != null) {
