@@ -30,7 +30,7 @@ public class MainMenu : MonoBehaviour
     
 
     void OnClickStart(){
-        SceneManager.LoadScene("skybox_test");
+        SceneManager.LoadScene("skybox test");
 		Debug.Log ("start button clicked");
     }
 }
