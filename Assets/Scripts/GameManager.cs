@@ -170,6 +170,7 @@ public class GameManager : MonoBehaviour
     public IEnumerator EndRound()
     {
         // need to add logic to show leaderboard
+        yield return VictoryCountdown(3);
         RoundEndCamera.SetActive(true);
         backgroundAudioSource.Stop();
         AudioController.PlayClip("scoreboard");
@@ -181,6 +182,7 @@ public class GameManager : MonoBehaviour
 
     public IEnumerator EndGame()
     {
+        yield return VictoryCountdown(3);
         RoundEndCamera.SetActive(true);
         backgroundAudioSource.Stop();
         AudioController.PlayClip("scoreboard");
