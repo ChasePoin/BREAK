@@ -82,7 +82,7 @@ public class PlayerController : MonoBehaviour
                         Physics.IgnoreCollision(ballCollider, playerCollider, true);
                     }
                     GameObject previousPlayerGO = ballHit.GetComponent<Ball>().ThrownBy;
-                    if (ballCollider != null && previousPlayerGO != null)
+                    if (ballCollider != null && previousPlayerGO != null && previousPlayerGO != gameObject)
                     {
                         PlayerController previousPlayerController = previousPlayerGO.GetComponent<PlayerController>();
                         previousPlayerController.hud.ball.enabled = false;
@@ -102,8 +102,11 @@ public class PlayerController : MonoBehaviour
             else
             {
                 GameObject ballBlocked = hit.transform.gameObject;
-                if (ballBlocked.tag == "Ball") ballBlocked.GetComponent<Rigidbody>().linearVelocity *= -1;
-                ballBlocked.GetComponent<Ball>().ThrownBy = gameObject;
+                if (ballBlocked.tag == "Ball")
+                {
+                    ballBlocked.GetComponent<Rigidbody>().linearVelocity *= -1;
+                    ballBlocked.GetComponent<Ball>().ThrownBy = gameObject;
+                }
             }
         }
         else
@@ -182,9 +185,23 @@ public class PlayerController : MonoBehaviour
             int cardNumber = context.action.GetBindingIndexForControl(context.control);
             if (hud.UseCard(cardNumber))
             {
+                if (!cards[cardNumber]) return;
+                switch (cards[cardNumber].Type)
+                {
+                    case CardTypes.Terrain:
+                        cards[cardNumber].UseCard(playerToApplyTo: this);
+                        break;
+                    case CardTypes.Ball:
+                        cards[cardNumber].UseCard(ballToApplyTo: BallHeldByPlayer.GetComponent<Ball>());
+                        break;
+                    case CardTypes.Player:
+                        cards[cardNumber].UseCard(playerToApplyTo: this);
+                        break;
+                    default:
+                        break;
+                }
                 hud.DeleteCardImage(cardNumber);
-                // cards[cardNumber].UseCard();
-                // cards[cardNumber] = null;
+                cards[cardNumber] = null;
             }
             Debug.Log($"Use card #{cardNumber}");
         }
@@ -193,6 +210,14 @@ public class PlayerController : MonoBehaviour
     {
         controller = gameObject.GetComponent<CharacterController>();
         chargePower = 0;
+
+        int i = 0;
+        foreach (Card card in cards)
+        {
+            hud.SetCardImage(i, card.CardSprite);
+            i++;
+            if (i > 2) break;
+        }
     }
 
     private void OnEnable()
@@ -220,6 +245,7 @@ public class PlayerController : MonoBehaviour
             Debug.Log("player " + otherPlayer.playerId + " scored a point. Total points: " + GameManager.gm.players[otherPlayer.playerId]);
             Debug.Log("player " + playerId + " got tagged by a ball! Alive Status: " + GameManager.gm.aliveStatus[playerId]);
             playerCamera.enabled = false;
+            thisBall.ThrownBy = null;
             Destroy(gameObject);
         }
     }
