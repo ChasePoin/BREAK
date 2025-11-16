@@ -13,9 +13,11 @@ public class CardFireBall : Card
     private void ApplyFlames(Ball ballToApplyTo)
     {
         GameObject ball = ballToApplyTo.gameObject;
-        ball.AddComponent<ParticleSystem>();
-        ParticleSystem instantiatedParticles = Instantiate(flames, ball.transform.position, Quaternion.identity);
-        instantiatedParticles.transform.parent = transform;
+
+        // Spawn a particle system and attach it to the ball
+        ParticleSystem instantiatedParticles = Instantiate(flames, ball.transform);
+        instantiatedParticles.transform.localPosition = Vector3.zero;
+
         instantiatedParticles.Play();
-    }
+}
 }
