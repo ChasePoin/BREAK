@@ -208,6 +208,11 @@ public class PlayerController : MonoBehaviour
                 }
                 hud.DeleteCardImage(cardNumber);
                 cards[cardNumber] = null;
+                AudioController.PlayClip("use-card");
+            }
+            else
+            {
+                AudioController.PlayClip("ready-card");
             }
             Debug.Log($"Use card #{cardNumber}");
         }
