@@ -10,6 +10,11 @@ public class AudioController : MonoBehaviour
     public AudioSource source;
     public List<AudioClip> clips;
     void Awake() {
+        if (a != null)
+        {
+            Destroy(transform.parent.gameObject);
+            return;
+        }
         a = this;
     }
     static public void PlayClip(string clipName) {
