@@ -45,6 +45,7 @@ public class PlayerController : MonoBehaviour
     private Vector3 playerVelocity;
     private bool groundedPlayer;
     GameObject BallHeldByPlayer;
+    public GameObject shield;
     public bool startCharge = false;
     public float chargePower = 0f;
     public float reachRadius = 2f;
@@ -52,6 +53,7 @@ public class PlayerController : MonoBehaviour
     public float maxCharge = 2f;
     public float mediumCharge = 1.2f;
     public int playerId = 0;
+    public bool blocking = false;
 
     public void OnMove(InputAction.CallbackContext context)
     {
@@ -239,6 +241,18 @@ public class PlayerController : MonoBehaviour
     {
         StartCoroutine(ModifySpeedIE(multiplier, seconds));
     }
+    public void BlockBalls(float seconds)
+    {
+        StartCoroutine(BlockBallsIE(seconds));
+    }
+    public IEnumerator BlockBallsIE(float seconds)
+    {
+        blocking = true;
+        GameObject shieldInstance = Instantiate(shield, transform);
+        yield return new WaitForSeconds(seconds);
+        Destroy(shieldInstance);
+        blocking = false;
+    }
     public IEnumerator ModifySpeedIE(float multiplier, float seconds)
     {
         Debug.Log($"Multiplying the speed by {multiplier} for {seconds} seconds.");
@@ -251,6 +265,7 @@ public class PlayerController : MonoBehaviour
     private void OnCollisionEnter(Collision collision)
     {
         Debug.Log("hi");
+        if (blocking) { blocking = false; return; }
         GameObject whatEntered = collision.gameObject;
         Ball thisBall = whatEntered.GetComponent<Ball>();
         // check if a ball entered

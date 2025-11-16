@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using UnityEngine.UIElements;
 
 
 
@@ -23,6 +24,7 @@ public class GameManager : MonoBehaviour
     public bool isRoundEnding = false;
     [SerializeField]
     private GameObject RoundEndCamera;
+    public int maxBalls = 10;
     void Awake()
     {
         if (gm != null) {
@@ -175,6 +177,7 @@ public class GameManager : MonoBehaviour
         yield return VictoryCountdown(12);
         ResetPlayers();
         RoundEndCamera.SetActive(false);
+        backgroundAudioSource.Play();
         SceneManager.LoadScene(scene);
     }
 
@@ -185,6 +188,7 @@ public class GameManager : MonoBehaviour
         AudioController.PlayClip("scoreboard");
         yield return VictoryCountdown(15);
         RoundEndCamera.SetActive(false);
+        backgroundAudioSource.Play();
         SceneManager.LoadScene("StartScene");
     }
 

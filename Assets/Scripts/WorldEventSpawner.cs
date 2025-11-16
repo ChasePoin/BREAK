@@ -4,8 +4,8 @@ public class WorldEventSpawner : MonoBehaviour
 {
     public GameObject objToSpawn;
     public bool spawn;
-    public int maxObj = 10;
     public int currentObjs;
+    public int maxForThisObject;
 
     void Start()
     {
@@ -14,9 +14,9 @@ public class WorldEventSpawner : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (currentObjs < maxObj)
+        if (currentObjs < GameManager.gm.maxBalls && currentObjs < maxForThisObject)
         {
-            float chance = 1f - ((float)currentObjs / maxObj);  // goes from 1 → 0
+            float chance = 1f / ((float)currentObjs * 30);
 
             if (Random.value < chance)
             {
