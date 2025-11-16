@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     public int currentRound = 0;
     static public GameManager gm;
     public string scene = "skybox test";
+    public AudioSource backgroundAudioSource;
     public bool isRoundEnding = false;
     [SerializeField]
     private GameObject RoundEndCamera;
@@ -169,7 +170,9 @@ public class GameManager : MonoBehaviour
     {
         // need to add logic to show leaderboard
         RoundEndCamera.SetActive(true);
-        yield return VictoryCountdown(5);
+        backgroundAudioSource.Stop();
+        AudioController.PlayClip("scoreboard");
+        yield return VictoryCountdown(12);
         ResetPlayers();
         RoundEndCamera.SetActive(false);
         SceneManager.LoadScene(scene);
@@ -178,6 +181,8 @@ public class GameManager : MonoBehaviour
     public IEnumerator EndGame()
     {
         RoundEndCamera.SetActive(true);
+        backgroundAudioSource.Stop();
+        AudioController.PlayClip("scoreboard");
         yield return VictoryCountdown(15);
         RoundEndCamera.SetActive(false);
         SceneManager.LoadScene("StartScene");

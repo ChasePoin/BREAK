@@ -159,3 +159,4 @@ MonoBehaviour:
   ThrownBy: {fileID: 0}
   LargeSize: 5
   MediumSize: 2.5
+  catchable: 1

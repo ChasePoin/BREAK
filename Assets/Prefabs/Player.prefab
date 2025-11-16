@@ -494,6 +494,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 2909012718282877866}
     m_Modifications:
+    - target: {fileID: 287180443639025774, guid: b3c5272149c9ed74e9f1195ee4b5c239, type: 3}
+      propertyPath: SliderColor
+      value: 
+      objectReference: {fileID: 2676356227577098029}
     - target: {fileID: 2233494308046869055, guid: b3c5272149c9ed74e9f1195ee4b5c239, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -591,6 +595,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b3c5272149c9ed74e9f1195ee4b5c239, type: 3}
+--- !u!114 &2676356227577098029 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6575132347100638315, guid: b3c5272149c9ed74e9f1195ee4b5c239, type: 3}
+  m_PrefabInstance: {fileID: 9087071934247469894}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
 --- !u!224 &6982045046589854073 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2233494308046869055, guid: b3c5272149c9ed74e9f1195ee4b5c239, type: 3}
