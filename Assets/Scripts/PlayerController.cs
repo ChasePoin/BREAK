@@ -84,6 +84,7 @@ public class PlayerController : MonoBehaviour
                     CapsuleCollider previousPlayerCollider = previousPlayerGO.GetComponent<CapsuleCollider>();
                     if (previousPlayerCollider != null) Physics.IgnoreCollision(ballCollider, previousPlayerCollider, false);
                 }
+                hud.ball.enabled = true;
                 Debug.Log("Caught the ball.");
             }
             else
@@ -162,6 +163,7 @@ public class PlayerController : MonoBehaviour
                 ballInLeftHand = false;
                 animator.SetTrigger("EndThrowLeft");
             }
+            hud.ball.enabled = false;
         }
        
     }
@@ -182,6 +184,7 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         controller = gameObject.GetComponent<CharacterController>();
+        chargePower = 0;
     }
 
     private void OnEnable()
@@ -226,6 +229,7 @@ public class PlayerController : MonoBehaviour
                 chargePower = maxCharge;
             }
         }
+        hud.chargeMeter.value = chargePower / maxCharge;
         groundedPlayer = controller.isGrounded;
         if (groundedPlayer && playerVelocity.y < 0)
         {
