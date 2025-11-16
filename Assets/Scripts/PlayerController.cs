@@ -19,7 +19,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private float pitchSensitivity = 250.0f;
     [SerializeField]
-    private Camera playerCamera;
+    public Camera playerCamera;
     [SerializeField]
     private Animator animator;
     [SerializeField]
@@ -30,6 +30,7 @@ public class PlayerController : MonoBehaviour
     private HUDController hud;
     [SerializeField]
     private List<Card> cards;
+    public SkinnedMeshRenderer playerMesh;
     private bool ballInLeftHand = false;
     private Vector2 movementInput = Vector2.zero;
     private Vector2 cameraInput = Vector2.zero;
@@ -42,6 +43,8 @@ public class PlayerController : MonoBehaviour
     GameObject BallHeldByPlayer;
     public bool startCharge = false;
     public float chargePower = 1f;
+    public float reachRadius = 2f;
+    public float reachRange = 2f;
     public float maxCharge = 2f;
     public float mediumCharge = 1.2f;
     public int playerId = 0;
@@ -64,32 +67,43 @@ public class PlayerController : MonoBehaviour
     // needs did I properly catch this logic and to assign BallHeldByPlayer if successful
     public void OnCatch(InputAction.CallbackContext context)
     {
-
-        if (Physics.SphereCast(playerCamera.transform.position + controller.center, playerCamera.transform.position.y, playerCamera.transform.forward, out RaycastHit hit, 5) && BallHeldByPlayer == null)
+        if (Physics.SphereCast(playerCamera.transform.position, reachRadius, playerCamera.transform.forward, out RaycastHit hit, reachRange))
         {
-            GameObject ballHit = hit.transform.gameObject;
-            if (ballHit.tag == "Ball")
-            {
-                BallHeldByPlayer = ballHit;
-                ballHit.transform.position = rightHand.position; //transform.position + new Vector3(.5f, 0f, 0f);
-                SphereCollider ballCollider = ballHit.GetComponent<SphereCollider>();
-                CapsuleCollider playerCollider = GetComponent<CapsuleCollider>();
-                if (ballCollider != null && playerCollider != null)
+            if (BallHeldByPlayer == null) {
+                GameObject ballHit = hit.transform.gameObject;
+                if (ballHit.tag == "Ball")
                 {
-                    Physics.IgnoreCollision(ballCollider, playerCollider, true);
+                    BallHeldByPlayer = ballHit;
+                    ballHit.transform.position = rightHand.position; //transform.position + new Vector3(.5f, 0f, 0f);
+                    SphereCollider ballCollider = ballHit.GetComponent<SphereCollider>();
+                    CapsuleCollider playerCollider = GetComponent<CapsuleCollider>();
+                    if (ballCollider != null && playerCollider != null)
+                    {
+                        Physics.IgnoreCollision(ballCollider, playerCollider, true);
+                    }
+                    GameObject previousPlayerGO = ballHit.GetComponent<Ball>().ThrownBy;
+                    if (ballCollider != null && previousPlayerGO != null)
+                    {
+                        PlayerController previousPlayerController = previousPlayerGO.GetComponent<PlayerController>();
+                        previousPlayerController.hud.ball.enabled = false;
+                        previousPlayerController.BallHeldByPlayer = null;
+                        CapsuleCollider previousPlayerCollider = previousPlayerGO.GetComponent<CapsuleCollider>();
+                        if (previousPlayerCollider != null) Physics.IgnoreCollision(ballCollider, previousPlayerCollider, false);
+                    }
+                    ballHit.layer = LayerMask.NameToLayer($"Player{playerId}");
+                    hud.ball.enabled = true;
+                    Debug.Log("Caught the ball.");
                 }
-                GameObject previousPlayerGO = ballHit.GetComponent<Ball>().ThrownBy;
-                if (ballCollider != null && previousPlayerGO != null)
+                else
                 {
-                    CapsuleCollider previousPlayerCollider = previousPlayerGO.GetComponent<CapsuleCollider>();
-                    if (previousPlayerCollider != null) Physics.IgnoreCollision(ballCollider, previousPlayerCollider, false);
+                    Debug.Log("Caught someting... It wasn't a ball!");
                 }
-                hud.ball.enabled = true;
-                Debug.Log("Caught the ball.");
             }
             else
             {
-                Debug.Log("Caught someting... It wasn't a ball!");
+                GameObject ballBlocked = hit.transform.gameObject;
+                if (ballBlocked.tag == "Ball") ballBlocked.GetComponent<Rigidbody>().linearVelocity *= -1;
+                ballBlocked.GetComponent<Ball>().ThrownBy = gameObject;
             }
         }
         else
@@ -127,7 +141,7 @@ public class PlayerController : MonoBehaviour
 
         float throwStrength = thisBall.Speed * 0.5f + chargePower;
         
-        thisBall.transform.position = playerCamera.transform.position + playerCamera.transform.forward * 1.2f;
+        thisBall.transform.position = playerCamera.transform.position + playerCamera.transform.forward * 1.5f;
 
         ballRigid.constraints = RigidbodyConstraints.FreezePositionY;
 
@@ -205,6 +219,7 @@ public class PlayerController : MonoBehaviour
             GameManager.gm.aliveStatus[playerId] = false;
             Debug.Log("player " + otherPlayer.playerId + " scored a point. Total points: " + GameManager.gm.players[otherPlayer.playerId]);
             Debug.Log("player " + playerId + " got tagged by a ball! Alive Status: " + GameManager.gm.aliveStatus[playerId]);
+            playerCamera.enabled = false;
             Destroy(gameObject);
         }
     }
@@ -256,7 +271,7 @@ public class PlayerController : MonoBehaviour
         if (cameraInput != Vector2.zero)
         {
             cameraPitch -= cameraInput.y * Time.deltaTime * pitchSensitivity;
-            cameraPitch = Mathf.Clamp(cameraPitch, -25f, 90f);
+            cameraPitch = Mathf.Clamp(cameraPitch, -90f, 90f);
             playerCamera.transform.localRotation = Quaternion.Euler(cameraPitch, 0, 0);
         }
 
