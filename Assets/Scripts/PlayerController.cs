@@ -65,8 +65,7 @@ public class PlayerController : MonoBehaviour
     // needs did I properly catch this logic and to assign BallHeldByPlayer if successful
     public void OnCatch(InputAction.CallbackContext context)
     {
-
-        if (Physics.SphereCast(transform.position + controller.center, transform.position.y, playerCamera.transform.forward, out RaycastHit hit, 5))
+        if (Physics.SphereCast(playerCamera.transform.position + controller.center, playerCamera.transform.position.y, playerCamera.transform.forward, out RaycastHit hit, 5))
         {
             if (BallHeldByPlayer == null) {
                 GameObject ballHit = hit.transform.gameObject;
@@ -131,48 +130,42 @@ public class PlayerController : MonoBehaviour
         }
         if (context.canceled)
         {
-            // cache values BEFORE modifying/resetting anything
-            Vector3 throwDir = playerCamera.transform.forward;
-            float throwStrength = thisBall.Speed * 0.5f * chargePower;
+        Vector3 throwDir = playerCamera.transform.forward;
+        throwDir.Normalize();
 
-            // move ball to head
-           thisBall.transform.position = new Vector3(playerCamera.transform.position.x, playerCamera.transform.position.y,thisBall.transform.position.z);
+        float throwStrength = thisBall.Speed * 0.5f + chargePower;
+        
+        thisBall.transform.position = playerCamera.transform.position + playerCamera.transform.forward * 1.2f;
 
-            // throw impulse
-            ballRigid.AddForce(throwDir * throwStrength, ForceMode.Impulse);
+        ballRigid.constraints = RigidbodyConstraints.FreezePositionY;
 
-            // curve impulse (side + consistent upward arc)
-            float upward;
-            if (chargePower <= mediumCharge)
-            {
-                upward = 4f;
-            }
-            else
-            {
-                upward = 2f;
-            }
-            Vector3 curve = new Vector3(thisBall.DirectionStrength, upward, 0f);
-            ballRigid.AddForce(curve, ForceMode.Impulse);
+        // float upward = (chargePower <= mediumCharge) ? 4f : 2f;
+        ballRigid.AddForce(throwDir * throwStrength, ForceMode.Impulse);
 
-            // cleanup
-            ballRigid.angularDamping = 3f;
-            ballRigid.useGravity = true;
+        
+        // ballRigid.AddForce(Vector3.up * upward, ForceMode.Impulse);
 
-            startCharge = false;
-            chargePower = 0;
+    
+        ballRigid.useGravity = true;
+        ballRigid.constraints = RigidbodyConstraints.None;
+        thisBall.ThrownBy = gameObject;
 
-            // set layer AFTER throw
-            BallHeldByPlayer.layer = LayerMask.NameToLayer("Balls");
-            BallHeldByPlayer = null;
+        startCharge = false;
+        chargePower = 0;
+        BallHeldByPlayer.layer = LayerMask.NameToLayer("Balls");
+        BallHeldByPlayer = null;
 
-            // anim triggers
-            if (context.control.name == "rightTrigger")
-                animator.SetTrigger("EndThrow");
-            else {
-                ballInLeftHand = false;
-                animator.SetTrigger("EndThrowLeft");
-            }
-            hud.ball.enabled = false;
+        // anim triggers
+        if (context.control.name == "rightTrigger")
+        {
+            animator.SetTrigger("EndThrow");
+        }
+        else 
+        {
+            ballInLeftHand = false;
+            animator.SetTrigger("EndThrowLeft");
+        }
+        hud.ball.enabled = false;
         }
        
     }
@@ -208,6 +201,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionEnter(Collision collision)
     {
+        Debug.Log("hi");
         GameObject whatEntered = collision.gameObject;
         Ball thisBall = whatEntered.GetComponent<Ball>();
         // check if a ball entered
@@ -216,6 +210,8 @@ public class PlayerController : MonoBehaviour
         {
             PlayerController otherPlayer = thisBall.ThrownBy.GetComponent<PlayerController>();
             GameManager.gm.players[otherPlayer.playerId] += 1; // they get a point!
+            Debug.Log("player " + otherPlayer.playerId + " scored a point. Total points: " + GameManager.gm.players[otherPlayer.playerId]);
+            Destroy(gameObject);
         }
     }
     void Update()

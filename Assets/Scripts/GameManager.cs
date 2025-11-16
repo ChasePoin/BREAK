@@ -28,6 +28,8 @@ public class GameManager : MonoBehaviour
             SpawnPoint sp = childTransform.gameObject.GetComponent<SpawnPoint>();
             if (!sp.haveISpawnedSomebody)
             {
+                float random = Random.value;
+                if (random > .25f) continue;
                 GameObject player = Instantiate(playerPrefab, childTransform);
                 PlayerController ppfb = player.GetComponent<PlayerController>();
                 if (start)
@@ -56,6 +58,7 @@ public class GameManager : MonoBehaviour
                 if (currentPlayers >= pim.maxPlayerCount) return;
             }
         }
+        if (currentPlayers != pim.maxPlayerCount) SpawnPlayers(start);
     }
     // need to reset players so we can spawn them in each new scene
     public void ResetPlayers()
