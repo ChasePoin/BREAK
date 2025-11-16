@@ -66,32 +66,39 @@ public class PlayerController : MonoBehaviour
     public void OnCatch(InputAction.CallbackContext context)
     {
 
-        if (Physics.SphereCast(transform.position + controller.center, transform.position.y, playerCamera.transform.forward, out RaycastHit hit, 5) && BallHeldByPlayer == null)
+        if (Physics.SphereCast(transform.position + controller.center, transform.position.y, playerCamera.transform.forward, out RaycastHit hit, 5))
         {
-            GameObject ballHit = hit.transform.gameObject;
-            if (ballHit.tag == "Ball")
-            {
-                BallHeldByPlayer = ballHit;
-                ballHit.transform.position = rightHand.position; //transform.position + new Vector3(.5f, 0f, 0f);
-                SphereCollider ballCollider = ballHit.GetComponent<SphereCollider>();
-                CapsuleCollider playerCollider = GetComponent<CapsuleCollider>();
-                if (ballCollider != null && playerCollider != null)
+            if (BallHeldByPlayer == null) {
+                GameObject ballHit = hit.transform.gameObject;
+                if (ballHit.tag == "Ball")
                 {
-                    Physics.IgnoreCollision(ballCollider, playerCollider, true);
+                    BallHeldByPlayer = ballHit;
+                    ballHit.transform.position = rightHand.position; //transform.position + new Vector3(.5f, 0f, 0f);
+                    SphereCollider ballCollider = ballHit.GetComponent<SphereCollider>();
+                    CapsuleCollider playerCollider = GetComponent<CapsuleCollider>();
+                    if (ballCollider != null && playerCollider != null)
+                    {
+                        Physics.IgnoreCollision(ballCollider, playerCollider, true);
+                    }
+                    GameObject previousPlayerGO = ballHit.GetComponent<Ball>().ThrownBy;
+                    if (ballCollider != null && previousPlayerGO != null)
+                    {
+                        CapsuleCollider previousPlayerCollider = previousPlayerGO.GetComponent<CapsuleCollider>();
+                        if (previousPlayerCollider != null) Physics.IgnoreCollision(ballCollider, previousPlayerCollider, false);
+                    }
+                    ballHit.layer = LayerMask.NameToLayer($"Player{playerId}");
+                    hud.ball.enabled = true;
+                    Debug.Log("Caught the ball.");
                 }
-                GameObject previousPlayerGO = ballHit.GetComponent<Ball>().ThrownBy;
-                if (ballCollider != null && previousPlayerGO != null)
+                else
                 {
-                    CapsuleCollider previousPlayerCollider = previousPlayerGO.GetComponent<CapsuleCollider>();
-                    if (previousPlayerCollider != null) Physics.IgnoreCollision(ballCollider, previousPlayerCollider, false);
+                    Debug.Log("Caught someting... It wasn't a ball!");
                 }
-                ballHit.layer = LayerMask.NameToLayer($"Player{playerId}");
-                hud.ball.enabled = true;
-                Debug.Log("Caught the ball.");
             }
             else
             {
-                Debug.Log("Caught someting... It wasn't a ball!");
+                GameObject ballBlocked = hit.transform.gameObject;
+                if (ballBlocked.tag == "Ball") ballBlocked.GetComponent<Rigidbody>().linearVelocity *= -1;
             }
         }
         else
