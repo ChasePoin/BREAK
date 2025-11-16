@@ -82,7 +82,7 @@ public class PlayerController : MonoBehaviour
                         Physics.IgnoreCollision(ballCollider, playerCollider, true);
                     }
                     GameObject previousPlayerGO = ballHit.GetComponent<Ball>().ThrownBy;
-                    if (ballCollider != null && previousPlayerGO != null)
+                    if (ballCollider != null && previousPlayerGO != null && previousPlayerGO != gameObject)
                     {
                         PlayerController previousPlayerController = previousPlayerGO.GetComponent<PlayerController>();
                         previousPlayerController.hud.ball.enabled = false;
@@ -102,8 +102,11 @@ public class PlayerController : MonoBehaviour
             else
             {
                 GameObject ballBlocked = hit.transform.gameObject;
-                if (ballBlocked.tag == "Ball") ballBlocked.GetComponent<Rigidbody>().linearVelocity *= -1;
-                ballBlocked.GetComponent<Ball>().ThrownBy = gameObject;
+                if (ballBlocked.tag == "Ball")
+                {
+                    ballBlocked.GetComponent<Rigidbody>().linearVelocity *= -1;
+                    ballBlocked.GetComponent<Ball>().ThrownBy = gameObject;
+                }
             }
         }
         else
@@ -220,6 +223,7 @@ public class PlayerController : MonoBehaviour
             Debug.Log("player " + otherPlayer.playerId + " scored a point. Total points: " + GameManager.gm.players[otherPlayer.playerId]);
             Debug.Log("player " + playerId + " got tagged by a ball! Alive Status: " + GameManager.gm.aliveStatus[playerId]);
             playerCamera.enabled = false;
+            thisBall.ThrownBy = null;
             Destroy(gameObject);
         }
     }
