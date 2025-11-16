@@ -9,7 +9,7 @@ using System.Collections.Generic;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField]
-    private float playerSpeed = 5.0f;
+    private float playerSpeed = 7.5f;
     [SerializeField]
     private float jumpHeight = 1.5f;
     [SerializeField]
@@ -92,6 +92,7 @@ public class PlayerController : MonoBehaviour
                     }
                     ballHit.layer = LayerMask.NameToLayer($"Player{playerId}");
                     hud.ball.enabled = true;
+                    chargePower = maxCharge;
                     Debug.Log("Caught the ball.");
                 }
                 else
