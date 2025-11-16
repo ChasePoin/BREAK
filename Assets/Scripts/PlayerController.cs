@@ -9,7 +9,7 @@ using System.Collections.Generic;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField]
-    private float playerSpeed = 5.0f;
+    private float playerSpeed = 7.5f;
     [SerializeField]
     private float jumpHeight = 1.5f;
     [SerializeField]
@@ -30,6 +30,10 @@ public class PlayerController : MonoBehaviour
     private HUDController hud;
     [SerializeField]
     private List<Card> cards;
+    [SerializeField]
+    private int maxCards = 3;
+    [SerializeField]
+    private List<GameObject> possibleCards;
     public SkinnedMeshRenderer playerMesh;
     private bool ballInLeftHand = false;
     private Vector2 movementInput = Vector2.zero;
@@ -42,7 +46,7 @@ public class PlayerController : MonoBehaviour
     private bool groundedPlayer;
     GameObject BallHeldByPlayer;
     public bool startCharge = false;
-    public float chargePower = 1f;
+    public float chargePower = 0f;
     public float reachRadius = 2f;
     public float reachRange = 2f;
     public float maxCharge = 2f;
@@ -73,6 +77,7 @@ public class PlayerController : MonoBehaviour
                 GameObject ballHit = hit.transform.gameObject;
                 if (ballHit.tag == "Ball")
                 {
+                    if (!ballHit.GetComponent<Ball>().catchable) {Debug.Log("Ball is uncatchable!"); return;}
                     BallHeldByPlayer = ballHit;
                     ballHit.transform.position = rightHand.position; //transform.position + new Vector3(.5f, 0f, 0f);
                     SphereCollider ballCollider = ballHit.GetComponent<SphereCollider>();
@@ -92,6 +97,7 @@ public class PlayerController : MonoBehaviour
                     }
                     ballHit.layer = LayerMask.NameToLayer($"Player{playerId}");
                     hud.ball.enabled = true;
+                    chargePower = maxCharge;
                     Debug.Log("Caught the ball.");
                 }
                 else
@@ -209,7 +215,7 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         controller = gameObject.GetComponent<CharacterController>();
-        chargePower = 0;
+        GenerateRandomCards();
 
         int i = 0;
         foreach (Card card in cards)
@@ -317,6 +323,15 @@ public class PlayerController : MonoBehaviour
 
         animator.SetFloat("ForwardSpeed", Vector3.Dot(finalMove, transform.forward));
         animator.SetFloat("SideSpeed", Vector3.Dot(finalMove, transform.right));
+    }
+
+    public void GenerateRandomCards()
+    {
+        for (int i = 0; i < maxCards; ++i)
+        {
+            cards.Add(possibleCards[Random.Range(0, possibleCards.Count)].GetComponent<Card>());
+            // Debug.Log("choosing: " + possibleCards[Random.Range(0, possibleCards.Count)].GetComponent<Card>());
+        }
     }
 }
 

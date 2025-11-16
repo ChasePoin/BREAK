@@ -20,6 +20,8 @@ public class GameManager : MonoBehaviour
     static public GameManager gm;
     public string scene = "skybox test";
     public bool isRoundEnding = false;
+    [SerializeField]
+    private GameObject RoundEndCamera;
     void Awake()
     {
         if (gm != null) {
@@ -29,7 +31,7 @@ public class GameManager : MonoBehaviour
         gm = this;
         pim = this.GetComponent<PlayerInputManager>();
         DontDestroyOnLoad(gameObject);
-        Debug.Log("test");
+        Debug.Log("Spawning Players");
         SpawnPlayers(true);
     }
 
@@ -61,6 +63,13 @@ public class GameManager : MonoBehaviour
                 }
                 else
                 {
+                    int culledPlayerLayer = LayerMask.NameToLayer($"Player{nextPlayerId}");
+                    if (culledPlayerLayer != -1)
+                    {
+                        int layerMaskToHide = 1 << culledPlayerLayer;
+                        ppfb.playerCamera.cullingMask &= ~layerMaskToHide;
+                        ppfb.playerMesh.gameObject.layer = culledPlayerLayer;
+                    }
                     ppfb.playerId = nextPlayerId;
                     nextPlayerId++;
                     Debug.Log("recreating " + ppfb.playerId + ": " + players[ppfb.playerId]);
@@ -105,7 +114,7 @@ public class GameManager : MonoBehaviour
     {
         if (isRoundEnding) return;
         var alivePlayers = CheckRemainingPlayers();
-        if (alivePlayers.count == 1) isRoundEnding = true;
+        if (alivePlayers.count <= 1) isRoundEnding = true;
         ProcessAliveCount(alivePlayers.count, alivePlayers.ids);
 
     }
@@ -143,13 +152,35 @@ public class GameManager : MonoBehaviour
             StartCoroutine(EndRound());
             return;
         }
+        else if (aliveCount == 1 && currentRound == numRounds)
+        {
+            players[aliveIds[0]] += 1;
+            StartCoroutine(EndGame());
+            return;
+        }
+        else if (aliveCount == 0 && currentRound == numRounds)
+        {
+            StartCoroutine(EndGame());
+            return;
+        }
     }
 
     public IEnumerator EndRound()
     {
+        // need to add logic to show leaderboard
+        RoundEndCamera.SetActive(true);
         yield return VictoryCountdown(5);
         ResetPlayers();
+        RoundEndCamera.SetActive(false);
         SceneManager.LoadScene(scene);
+    }
+
+    public IEnumerator EndGame()
+    {
+        RoundEndCamera.SetActive(true);
+        yield return VictoryCountdown(15);
+        RoundEndCamera.SetActive(false);
+        SceneManager.LoadScene("StartScene");
     }
 
     IEnumerator VictoryCountdown(int seconds)
