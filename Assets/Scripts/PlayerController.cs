@@ -208,6 +208,7 @@ public class PlayerController : MonoBehaviour
                 }
                 hud.DeleteCardImage(cardNumber);
                 cards[cardNumber] = null;
+                
             }
             Debug.Log($"Use card #{cardNumber}");
         }
@@ -334,6 +335,23 @@ public class PlayerController : MonoBehaviour
             cards.Add(possibleCards[Random.Range(0, possibleCards.Count)].GetComponent<Card>());
             // Debug.Log("choosing: " + possibleCards[Random.Range(0, possibleCards.Count)].GetComponent<Card>());
         }
+    }
+
+    public void GenerateRandomSingleCard()
+    {
+        Debug.Log("inside player controller");
+        for(int i = 0; i < maxCards; i++)
+        {
+           if (cards[i]==null)
+            {
+
+                cards[i] = possibleCards[Random.Range(0, possibleCards.Count)].GetComponent<Card>();
+                hud.SetCardImage(i, cards[i].CardSprite);
+                Debug.Log("choosing single: " + possibleCards[Random.Range(0, possibleCards.Count)].GetComponent<Card>());
+                return;
+            } 
+        }
+        
     }
 }
 
