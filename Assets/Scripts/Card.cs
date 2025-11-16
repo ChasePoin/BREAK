@@ -22,9 +22,9 @@ public class Card : MonoBehaviour
     public string CardName;
     public CardTypes Type;
     public Rarity Rarity;
-    public Image CardSprite;
+    public Sprite CardSprite;
 
-    public void UseCard(Ball ballToApplyTo = null, PlayerController playerToApplyTo = null)
+    public virtual void UseCard(Ball ballToApplyTo = null, PlayerController playerToApplyTo = null)
     {
         string what = ballToApplyTo == null ? "player" : "ball";
         Debug.Log("Applying " + CardName + " to " + what);

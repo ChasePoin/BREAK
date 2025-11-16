@@ -185,9 +185,23 @@ public class PlayerController : MonoBehaviour
             int cardNumber = context.action.GetBindingIndexForControl(context.control);
             if (hud.UseCard(cardNumber))
             {
+                if (!cards[cardNumber]) return;
+                switch (cards[cardNumber].Type)
+                {
+                    case CardTypes.Terrain:
+                        cards[cardNumber].UseCard(playerToApplyTo: this);
+                        break;
+                    case CardTypes.Ball:
+                        cards[cardNumber].UseCard(ballToApplyTo: BallHeldByPlayer.GetComponent<Ball>());
+                        break;
+                    case CardTypes.Player:
+                        cards[cardNumber].UseCard(playerToApplyTo: this);
+                        break;
+                    default:
+                        break;
+                }
                 hud.DeleteCardImage(cardNumber);
-                // cards[cardNumber].UseCard();
-                // cards[cardNumber] = null;
+                cards[cardNumber] = null;
             }
             Debug.Log($"Use card #{cardNumber}");
         }
@@ -196,6 +210,14 @@ public class PlayerController : MonoBehaviour
     {
         controller = gameObject.GetComponent<CharacterController>();
         chargePower = 0;
+
+        int i = 0;
+        foreach (Card card in cards)
+        {
+            hud.SetCardImage(i, card.CardSprite);
+            i++;
+            if (i > 2) break;
+        }
     }
 
     private void OnEnable()
