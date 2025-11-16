@@ -77,6 +77,7 @@ public class PlayerController : MonoBehaviour
                 GameObject ballHit = hit.transform.gameObject;
                 if (ballHit.tag == "Ball")
                 {
+                    if (!ballHit.GetComponent<Ball>().catchable) {Debug.Log("Ball is uncatchable!"); return;}
                     BallHeldByPlayer = ballHit;
                     ballHit.transform.position = rightHand.position; //transform.position + new Vector3(.5f, 0f, 0f);
                     SphereCollider ballCollider = ballHit.GetComponent<SphereCollider>();
