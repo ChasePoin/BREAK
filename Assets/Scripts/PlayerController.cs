@@ -3,6 +3,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(CharacterController))]
 public class PlayerController : MonoBehaviour
@@ -13,15 +14,37 @@ public class PlayerController : MonoBehaviour
     private float jumpHeight = 1.5f;
     [SerializeField]
     private float gravityValue = -9.81f;
-
+    [SerializeField]
+    private float yawSensitivity = 250.0f;
+    [SerializeField]
+    private float pitchSensitivity = 250.0f;
+    [SerializeField]
+    private Camera playerCamera;
+    [SerializeField]
+    private Animator animator;
+    [SerializeField]
+    private Transform leftHand;
+    [SerializeField]
+    private Transform rightHand;
+    [SerializeField]
+    private HUDController hud;
+    [SerializeField]
+    private List<Card> cards;
+    private bool ballInLeftHand = false;
     private Vector2 movementInput = Vector2.zero;
     private Vector2 cameraInput = Vector2.zero;
+    private float cameraPitch = 0f;
     private bool jumped = false;
 
     private CharacterController controller;
     private Vector3 playerVelocity;
     private bool groundedPlayer;
     GameObject BallHeldByPlayer;
+    public bool startCharge = false;
+    public float chargePower = 1f;
+    public float maxCharge = 2f;
+    public float mediumCharge = 1.2f;
+    public int playerId = 0;
 
     public void OnMove(InputAction.CallbackContext context)
     {
@@ -33,41 +56,129 @@ public class PlayerController : MonoBehaviour
     }
     public void OnJump(InputAction.CallbackContext context)
     {
-        jumped = context.ReadValue<bool>();
+        if (context.performed)
+            jumped = true;
+        if (context.canceled)
+            jumped = false;
     }
-
     // needs did I properly catch this logic and to assign BallHeldByPlayer if successful
     public void OnCatch(InputAction.CallbackContext context)
     {
 
-        if (Physics.SphereCast(transform.position + controller.center, transform.position.y, transform.forward, out RaycastHit hit, 10))
+        if (Physics.SphereCast(playerCamera.transform.position + controller.center, playerCamera.transform.position.y, playerCamera.transform.forward, out RaycastHit hit, 5) && BallHeldByPlayer == null)
         {
             GameObject ballHit = hit.transform.gameObject;
-            BallHeldByPlayer = ballHit;
-            ballHit.transform.position = controller.center + new Vector3(1f, 0f, 0f);
-            Debug.Log("Caught the ball.");
+            if (ballHit.tag == "Ball")
+            {
+                BallHeldByPlayer = ballHit;
+                ballHit.transform.position = rightHand.position; //transform.position + new Vector3(.5f, 0f, 0f);
+                SphereCollider ballCollider = ballHit.GetComponent<SphereCollider>();
+                CapsuleCollider playerCollider = GetComponent<CapsuleCollider>();
+                if (ballCollider != null && playerCollider != null)
+                {
+                    Physics.IgnoreCollision(ballCollider, playerCollider, true);
+                }
+                GameObject previousPlayerGO = ballHit.GetComponent<Ball>().ThrownBy;
+                if (ballCollider != null && previousPlayerGO != null)
+                {
+                    CapsuleCollider previousPlayerCollider = previousPlayerGO.GetComponent<CapsuleCollider>();
+                    if (previousPlayerCollider != null) Physics.IgnoreCollision(ballCollider, previousPlayerCollider, false);
+                }
+                hud.ball.enabled = true;
+                Debug.Log("Caught the ball.");
+            }
+            else
+            {
+                Debug.Log("Caught someting... It wasn't a ball!");
+            }
         }
         else
         {
             Debug.Log("Did not Catch the ball.");
         }
+        if (context.performed)
+            Debug.Log("Catch the ball. down");
     }
     // needs to take transformations and effects applied to the ball and kick it off
     public void OnThrow(InputAction.CallbackContext context)
     {
+        if (BallHeldByPlayer == null) return;
+        Rigidbody ballRigid = BallHeldByPlayer.GetComponent<Rigidbody>();
         Ball thisBall = BallHeldByPlayer.GetComponent<Ball>();
-        thisBall.ThrownBy = this.gameObject; // set ball's thrown by to this player
-        BallHeldByPlayer.GetComponent<Rigidbody>().AddRelativeForce(new Vector3 (thisBall.Speed, 0 ,0)); // launch the ball
+        if (context.started)
+        {
+            startCharge = true;
+            ballRigid.mass = thisBall.GravityStrength;
+            ballRigid.useGravity = false;
+            if (context.control.name == "rightTrigger")
+            {
+                animator.SetTrigger("StartThrow");
+            }
+            else
+            {
+                ballInLeftHand = true;
+                animator.SetTrigger("StartThrowLeft");
+            }
+        }
+        if (context.canceled)
+        {
+        Vector3 throwDir = playerCamera.transform.forward;
+        throwDir.Normalize();
+
+        float throwStrength = thisBall.Speed * 0.5f + chargePower;
+        
+        thisBall.transform.position = playerCamera.transform.position + playerCamera.transform.forward * 1.2f;
+
+        ballRigid.constraints = RigidbodyConstraints.FreezePositionY;
+
+        // float upward = (chargePower <= mediumCharge) ? 4f : 2f;
+        ballRigid.AddForce(throwDir * throwStrength, ForceMode.Impulse);
+
+        
+        // ballRigid.AddForce(Vector3.up * upward, ForceMode.Impulse);
+
+    
+        ballRigid.useGravity = true;
+        ballRigid.constraints = RigidbodyConstraints.None;
+        thisBall.ThrownBy = gameObject;
+
+        startCharge = false;
+        chargePower = 0;
+        BallHeldByPlayer.layer = LayerMask.NameToLayer("Balls");
+        BallHeldByPlayer = null;
+
+        // anim triggers
+        if (context.control.name == "rightTrigger")
+        {
+            animator.SetTrigger("EndThrow");
+        }
+        else 
+        {
+            ballInLeftHand = false;
+            animator.SetTrigger("EndThrowLeft");
+        }
+        hud.ball.enabled = false;
+        }
        
     }
     public void OnCardUse(InputAction.CallbackContext context)
     {
-        //context.
-        //Debug.Log("Use card #", );
+        if (context.performed)
+        {
+            int cardNumber = context.action.GetBindingIndexForControl(context.control);
+            if (hud.UseCard(cardNumber))
+            {
+                hud.DeleteCardImage(cardNumber);
+                // cards[cardNumber].UseCard();
+                // cards[cardNumber] = null;
+            }
+            Debug.Log($"Use card #{cardNumber}");
+        }
     }
     private void Awake()
     {
-        controller = gameObject.AddComponent<CharacterController>();
+        controller = gameObject.GetComponent<CharacterController>();
+        chargePower = 0;
     }
 
     private void OnEnable()
@@ -80,26 +191,78 @@ public class PlayerController : MonoBehaviour
 
     }
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log("hi");
+        GameObject whatEntered = collision.gameObject;
+        Ball thisBall = whatEntered.GetComponent<Ball>();
+        // check if a ball entered
+        if (thisBall == null) { Debug.Log("Not a Ball Entered"); return; }
+        if (thisBall.ThrownBy != gameObject && thisBall.ThrownBy != null)
+        {
+            PlayerController otherPlayer = thisBall.ThrownBy.GetComponent<PlayerController>();
+            GameManager.gm.players[otherPlayer.playerId] += 1; // they get a point!
+            Debug.Log("player " + otherPlayer.playerId + " scored a point. Total points: " + GameManager.gm.players[otherPlayer.playerId]);
+            Destroy(gameObject);
+        }
+    }
     void Update()
     {
+        if (BallHeldByPlayer) 
+            if (!ballInLeftHand) { BallHeldByPlayer.transform.position = rightHand.position; } else { BallHeldByPlayer.transform.position = leftHand.position; } //transform.position + new Vector3(1f, 0f, 0f);
+        
+        if (startCharge)
+        {
+            if (chargePower >= mediumCharge && chargePower <= maxCharge)
+            {
+                chargePower += Time.deltaTime / 4f;
+            }
+            else if (chargePower <= mediumCharge)
+            {
+                chargePower += Time.deltaTime / maxCharge;
+            }
+            else
+            {
+                chargePower = maxCharge;
+            }
+        }
+        hud.chargeMeter.value = chargePower / maxCharge;
         groundedPlayer = controller.isGrounded;
         if (groundedPlayer && playerVelocity.y < 0)
         {
             playerVelocity.y = 0f;
         }
 
-        Vector3 move = new Vector3(movementInput.x, 0, movementInput.y);
+        Vector3 move = transform.forward * movementInput.y + transform.right * movementInput.x;
         move = Vector3.ClampMagnitude(move, 1f);
 
         if (move != Vector3.zero)
         {
-            transform.forward = move;
+            transform.position = move;
+        } else
+        {
+            animator.SetTrigger("Idle");
+        }
+
+        Vector3 rotatePlayer = new Vector3(0, cameraInput.x, 0);
+
+        if (rotatePlayer != Vector3.zero)
+        {
+            transform.Rotate(rotatePlayer * Time.deltaTime * yawSensitivity);
+        }
+
+        if (cameraInput != Vector2.zero)
+        {
+            cameraPitch -= cameraInput.y * Time.deltaTime * pitchSensitivity;
+            cameraPitch = Mathf.Clamp(cameraPitch, -25f, 90f);
+            playerCamera.transform.localRotation = Quaternion.Euler(cameraPitch, 0, 0);
         }
 
         // Jump
         if (jumped && groundedPlayer)
         {
             playerVelocity.y = Mathf.Sqrt(jumpHeight * -2.0f * gravityValue);
+            animator.SetTrigger("Jump");
         }
 
         // Apply gravity
@@ -108,5 +271,9 @@ public class PlayerController : MonoBehaviour
         // Combine horizontal and vertical movement
         Vector3 finalMove = (move * playerSpeed) + (playerVelocity.y * Vector3.up);
         controller.Move(finalMove * Time.deltaTime);
+
+        animator.SetFloat("ForwardSpeed", Vector3.Dot(finalMove, transform.forward));
+        animator.SetFloat("SideSpeed", Vector3.Dot(finalMove, transform.right));
     }
 }
+
