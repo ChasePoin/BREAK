@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using UnityEngine.UIElements;
 
 
 
@@ -175,6 +176,7 @@ public class GameManager : MonoBehaviour
         yield return VictoryCountdown(12);
         ResetPlayers();
         RoundEndCamera.SetActive(false);
+        backgroundAudioSource.Play();
         SceneManager.LoadScene(scene);
     }
 
@@ -185,6 +187,7 @@ public class GameManager : MonoBehaviour
         AudioController.PlayClip("scoreboard");
         yield return VictoryCountdown(15);
         RoundEndCamera.SetActive(false);
+        backgroundAudioSource.Play();
         SceneManager.LoadScene("StartScene");
     }
 

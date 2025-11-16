@@ -368,7 +368,9 @@ MonoBehaviour:
   - {fileID: 4727071250362696273, guid: 01db00cd530d5b841a3a6e471258c03a, type: 3}
   - {fileID: 4752183109599565929, guid: 522cfff8c32bde74abae38e2f8516392, type: 3}
   - {fileID: 4752183109599565929, guid: 5ac801d29d8188a4ba979637add7007c, type: 3}
+  - {fileID: 4752183109599565929, guid: 8c3b3df7898d6c54cadff60de18ba46f, type: 3}
   playerMesh: {fileID: 4741097600270438683}
+  shield: {fileID: 9210181545346187358, guid: 8a34f0220d38bd3498b2b8e8e2a12df3, type: 3}
   startCharge: 0
   chargePower: 0
   reachRadius: 2
@@ -376,6 +378,7 @@ MonoBehaviour:
   maxCharge: 2
   mediumCharge: 1.2
   playerId: 0
+  blocking: 0
 --- !u!1001 &8523712023093303669
 PrefabInstance:
   m_ObjectHideFlags: 0

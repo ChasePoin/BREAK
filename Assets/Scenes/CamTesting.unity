@@ -271,6 +271,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   playerPrefab: {fileID: 6558495489953477904, guid: 1523e439462d69c43aec3b5d03ac0dab, type: 3}
   nextPlayerId: 1
+  numRounds: 5
+  currentRound: 0
+  scene: skybox test
+  backgroundAudioSource: {fileID: 0}
+  isRoundEnding: 0
+  RoundEndCamera: {fileID: 0}
 --- !u!4 &375756586 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 6803652780886089746, guid: 0fdd9a0ac26838e4692173bf6c4ea558, type: 3}
