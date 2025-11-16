@@ -363,9 +363,9 @@ MonoBehaviour:
   rightHand: {fileID: 4751187496756043259}
   hud: {fileID: 9072368206176654120}
   cards:
-  - {fileID: 5357966104236953786, guid: 522cfff8c32bde74abae38e2f8516392, type: 3}
-  - {fileID: 5357966104236953786, guid: 522cfff8c32bde74abae38e2f8516392, type: 3}
-  - {fileID: 5357966104236953786, guid: 522cfff8c32bde74abae38e2f8516392, type: 3}
+  - {fileID: -5024182545271054632, guid: 5ac801d29d8188a4ba979637add7007c, type: 3}
+  - {fileID: -5024182545271054632, guid: 5ac801d29d8188a4ba979637add7007c, type: 3}
+  - {fileID: -5024182545271054632, guid: 5ac801d29d8188a4ba979637add7007c, type: 3}
   playerMesh: {fileID: 4741097600270438683}
   startCharge: 0
   chargePower: 1

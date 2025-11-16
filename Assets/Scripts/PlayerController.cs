@@ -36,7 +36,7 @@ public class PlayerController : MonoBehaviour
     private Vector2 cameraInput = Vector2.zero;
     private float cameraPitch = 0f;
     private bool jumped = false;
-
+    private float speedModifier = 1f;
     private CharacterController controller;
     private Vector3 playerVelocity;
     private bool groundedPlayer;
@@ -219,17 +219,19 @@ public class PlayerController : MonoBehaviour
             if (i > 2) break;
         }
     }
-
-    private void OnEnable()
+    public void ModifySpeed(float multiplier, float seconds)
     {
-
+        StartCoroutine(ModifySpeedIE(multiplier, seconds));
     }
-
-    private void OnDisable()
+    public IEnumerator ModifySpeedIE(float multiplier, float seconds)
     {
+        Debug.Log($"Multiplying the speed by {multiplier} for {seconds} seconds.");
+        speedModifier *= multiplier;
 
+        yield return new WaitForSeconds(seconds);
+
+        speedModifier /= multiplier;
     }
-
     private void OnCollisionEnter(Collision collision)
     {
         Debug.Log("hi");
@@ -312,7 +314,7 @@ public class PlayerController : MonoBehaviour
         playerVelocity.y += gravityValue * Time.deltaTime;
 
         // Combine horizontal and vertical movement
-        Vector3 finalMove = (move * playerSpeed) + (playerVelocity.y * Vector3.up);
+        Vector3 finalMove = (move * playerSpeed * speedModifier) + (playerVelocity.y * Vector3.up);
         controller.Move(finalMove * Time.deltaTime);
 
         animator.SetFloat("ForwardSpeed", Vector3.Dot(finalMove, transform.forward));
